@@ -1,0 +1,362 @@
+[
+  {
+    "id": "file-path",
+    "title_ko": "파일 경로",
+    "keyword_en": "file path",
+    "level": 1
+  },
+  {
+    "id": "file-extension",
+    "title_ko": "파일 확장자",
+    "keyword_en": "file extension",
+    "level": 1
+  },
+  {
+    "id": "plain-text",
+    "title_ko": "플레인 텍스트",
+    "keyword_en": "plain text",
+    "level": 1
+  },
+  {
+    "id": "markdown",
+    "title_ko": "마크다운",
+    "keyword_en": "markdown",
+    "level": 1
+  },
+  {
+    "id": "client-server",
+    "title_ko": "클라이언트와 서버",
+    "keyword_en": "client server",
+    "level": 1
+  },
+  {
+    "id": "url",
+    "title_ko": "URL",
+    "keyword_en": "URL",
+    "level": 1
+  },
+  {
+    "id": "cloud-computing",
+    "title_ko": "클라우드",
+    "keyword_en": "cloud computing",
+    "level": 1
+  },
+  {
+    "id": "open-source",
+    "title_ko": "오픈소스",
+    "keyword_en": "open source",
+    "level": 1
+  },
+  {
+    "id": "large-language-model",
+    "title_ko": "대형 언어 모델",
+    "keyword_en": "large language model",
+    "level": 1
+  },
+  {
+    "id": "prompt",
+    "title_ko": "프롬프트",
+    "keyword_en": "prompt",
+    "level": 1
+  },
+  {
+    "id": "token",
+    "title_ko": "토큰",
+    "keyword_en": "token",
+    "level": 1
+  },
+  {
+    "id": "ai-agent",
+    "title_ko": "AI 에이전트",
+    "keyword_en": "AI agent",
+    "level": 1
+  },
+  {
+    "id": "terminal",
+    "title_ko": "터미널",
+    "keyword_en": "terminal",
+    "level": 2
+  },
+  {
+    "id": "command-line-interface",
+    "title_ko": "명령줄 인터페이스",
+    "keyword_en": "command line interface",
+    "level": 2
+  },
+  {
+    "id": "shell-command",
+    "title_ko": "셸 명령어",
+    "keyword_en": "shell command",
+    "level": 2
+  },
+  {
+    "id": "package-manager",
+    "title_ko": "패키지 매니저",
+    "keyword_en": "package manager",
+    "level": 2
+  },
+  {
+    "id": "environment-variable",
+    "title_ko": "환경 변수",
+    "keyword_en": "environment variable",
+    "level": 2
+  },
+  {
+    "id": "json",
+    "title_ko": "JSON",
+    "keyword_en": "JSON",
+    "level": 2
+  },
+  {
+    "id": "config-file",
+    "title_ko": "설정 파일",
+    "keyword_en": "configuration file",
+    "level": 2
+  },
+  {
+    "id": "api",
+    "title_ko": "API",
+    "keyword_en": "API",
+    "level": 2
+  },
+  {
+    "id": "http-request",
+    "title_ko": "HTTP 요청",
+    "keyword_en": "HTTP request",
+    "level": 2
+  },
+  {
+    "id": "api-key",
+    "title_ko": "API 키",
+    "keyword_en": "API key",
+    "level": 2
+  },
+  {
+    "id": "context-window",
+    "title_ko": "컨텍스트 윈도우",
+    "keyword_en": "context window",
+    "level": 2
+  },
+  {
+    "id": "hallucination",
+    "title_ko": "할루시네이션",
+    "keyword_en": "AI hallucination",
+    "level": 2
+  },
+  {
+    "id": "git",
+    "title_ko": "Git",
+    "keyword_en": "git version control",
+    "level": 3
+  },
+  {
+    "id": "commit",
+    "title_ko": "커밋",
+    "keyword_en": "git commit",
+    "level": 3
+  },
+  {
+    "id": "branch",
+    "title_ko": "브랜치",
+    "keyword_en": "git branch",
+    "level": 3
+  },
+  {
+    "id": "pull-request",
+    "title_ko": "풀 리퀘스트",
+    "keyword_en": "pull request",
+    "level": 3
+  },
+  {
+    "id": "rest-api",
+    "title_ko": "REST API",
+    "keyword_en": "REST API",
+    "level": 3
+  },
+  {
+    "id": "http-status-code",
+    "title_ko": "상태 코드",
+    "keyword_en": "HTTP status code",
+    "level": 3
+  },
+  {
+    "id": "authentication-authorization",
+    "title_ko": "인증과 인가",
+    "keyword_en": "authentication authorization",
+    "level": 3
+  },
+  {
+    "id": "temperature",
+    "title_ko": "샘플링 온도",
+    "keyword_en": "LLM temperature",
+    "level": 3
+  },
+  {
+    "id": "system-prompt",
+    "title_ko": "시스템 프롬프트",
+    "keyword_en": "system prompt",
+    "level": 3
+  },
+  {
+    "id": "tool-calling",
+    "title_ko": "도구 호출",
+    "keyword_en": "tool calling",
+    "level": 3
+  },
+  {
+    "id": "structured-output",
+    "title_ko": "구조화된 출력",
+    "keyword_en": "structured output",
+    "level": 3
+  },
+  {
+    "id": "embedding",
+    "title_ko": "임베딩",
+    "keyword_en": "embedding",
+    "level": 3
+  },
+  {
+    "id": "vector-database",
+    "title_ko": "벡터 데이터베이스",
+    "keyword_en": "vector database",
+    "level": 4
+  },
+  {
+    "id": "rag",
+    "title_ko": "RAG",
+    "keyword_en": "retrieval augmented generation",
+    "level": 4
+  },
+  {
+    "id": "webhook",
+    "title_ko": "웹훅",
+    "keyword_en": "webhook",
+    "level": 4
+  },
+  {
+    "id": "rate-limit",
+    "title_ko": "레이트 리밋",
+    "keyword_en": "API rate limit",
+    "level": 4
+  },
+  {
+    "id": "asynchronous-processing",
+    "title_ko": "비동기 처리",
+    "keyword_en": "asynchronous programming",
+    "level": 4
+  },
+  {
+    "id": "container",
+    "title_ko": "컨테이너",
+    "keyword_en": "software container",
+    "level": 4
+  },
+  {
+    "id": "sandbox",
+    "title_ko": "샌드박스",
+    "keyword_en": "sandbox",
+    "level": 4
+  },
+  {
+    "id": "model-context-protocol",
+    "title_ko": "MCP",
+    "keyword_en": "model context protocol",
+    "level": 4
+  },
+  {
+    "id": "agent-loop",
+    "title_ko": "에이전트 루프",
+    "keyword_en": "agent loop",
+    "level": 4
+  },
+  {
+    "id": "multi-agent",
+    "title_ko": "멀티 에이전트",
+    "keyword_en": "multi-agent system",
+    "level": 4
+  },
+  {
+    "id": "prompt-caching",
+    "title_ko": "프롬프트 캐싱",
+    "keyword_en": "prompt caching",
+    "level": 4
+  },
+  {
+    "id": "oauth",
+    "title_ko": "OAuth",
+    "keyword_en": "OAuth",
+    "level": 4
+  },
+  {
+    "id": "prompt-injection",
+    "title_ko": "프롬프트 인젝션",
+    "keyword_en": "prompt injection",
+    "level": 5
+  },
+  {
+    "id": "jailbreak",
+    "title_ko": "탈옥",
+    "keyword_en": "AI jailbreak",
+    "level": 5
+  },
+  {
+    "id": "least-privilege",
+    "title_ko": "최소 권한 원칙",
+    "keyword_en": "principle of least privilege",
+    "level": 5
+  },
+  {
+    "id": "secrets-management",
+    "title_ko": "시크릿 관리",
+    "keyword_en": "secrets management",
+    "level": 5
+  },
+  {
+    "id": "fine-tuning",
+    "title_ko": "파인튜닝",
+    "keyword_en": "fine-tuning",
+    "level": 5
+  },
+  {
+    "id": "llm-evaluation",
+    "title_ko": "평가(Evals)",
+    "keyword_en": "LLM evaluation",
+    "level": 5
+  },
+  {
+    "id": "observability",
+    "title_ko": "관측 가능성",
+    "keyword_en": "observability",
+    "level": 5
+  },
+  {
+    "id": "ci-cd",
+    "title_ko": "CI/CD",
+    "keyword_en": "CI/CD",
+    "level": 5
+  },
+  {
+    "id": "idempotency",
+    "title_ko": "멱등성",
+    "keyword_en": "idempotency",
+    "level": 5
+  },
+  {
+    "id": "context-engineering",
+    "title_ko": "컨텍스트 엔지니어링",
+    "keyword_en": "context engineering",
+    "level": 5
+  },
+  {
+    "id": "human-in-the-loop",
+    "title_ko": "휴먼 인 더 루프",
+    "keyword_en": "human in the loop",
+    "level": 5
+  },
+  {
+    "id": "guardrails",
+    "title_ko": "가드레일",
+    "keyword_en": "AI guardrails",
+    "level": 5
+  }
+]
