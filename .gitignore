@@ -1,3 +1,10 @@
 .superpowers/
 .DS_Store
 resource/
+.env
+var/
+out/
+logs/
+.venv/
+__pycache__/
+.pytest_cache/

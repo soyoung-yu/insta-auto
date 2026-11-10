@@ -1,0 +1,31 @@
+[project]
+name = "hanip"
+version = "0.1.0"
+description = "Daily receipt-style Instagram carousel for @hanip.byte"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "feedparser>=6.0.14",
+    "jinja2>=3.1.6",
+    "playwright>=1.65.0",
+    "pydantic>=2.14.3",
+    "python-dotenv>=1.2.4",
+    "requests>=2.34.2",
+]
+
+[project.scripts]
+hanip = "hanip.__main__:main"
+
+[build-system]
+requires = ["uv_build>=0.11.31,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pillow>=13.0.0",
+    "pytest>=9.2.0",
+    "responses>=0.26.3",
+]
