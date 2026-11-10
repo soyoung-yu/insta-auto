@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 from pathlib import Path
 
 
+def _applescript_string(text: str) -> str:
+    return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
 def notify(title: str, message: str) -> None:
-    script = f"display notification {json.dumps(message)} with title {json.dumps(title)}"
+    script = f"display notification {_applescript_string(message)} with title {_applescript_string(title)}"
     subprocess.run(["osascript", "-e", script], check=False)
 
 
