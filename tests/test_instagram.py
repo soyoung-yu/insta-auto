@@ -81,3 +81,9 @@ def test_refresh_token():
         match=[matchers.query_param_matcher({"grant_type": "ig_refresh_token", "access_token": "OLD"})],
     )
     assert refresh_token("OLD") == ("NEW", 5184000)
+
+
+@responses.activate
+def test_container_status():
+    add_status("CAR", "PUBLISHED")
+    assert client().container_status("CAR") == "PUBLISHED"

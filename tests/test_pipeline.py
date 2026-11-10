@@ -21,8 +21,10 @@ TOPICS = [Topic(id=f"t{i}", title_ko=f"주제{i}", keyword_en=f"k{i}", level=1) 
 class Fake:
     """Records calls; each attribute is a Deps-compatible callable."""
 
-    def __init__(self, overflow_times=0, ig_error=None, gen_error=None):
+    def __init__(self, overflow_times=0, ig_error=None, gen_error=None, publish_error=None, status="PUBLISHED"):
         self.calls = {}
+        self.publish_error = publish_error  # raised by publish() but the post still went live
+        self.status = status
         self.overflow_times = overflow_times
         self.ig_error = ig_error
         self.gen_error = gen_error
@@ -71,12 +73,26 @@ class Fake:
             def __init__(self, settings):
                 fake._rec("make_instagram", token=settings.ig_access_token)
 
-            def post_carousel(self, urls, caption):
-                fake._rec("post_carousel", urls, caption)
+            def prepare_carousel(self, urls, caption):
+                fake._rec("prepare_carousel", urls, caption)
                 if fake.ig_error:
                     raise fake.ig_error
-                fake.published.append(caption)
+                fake.last_caption = caption
+                return f"CAR{len(fake.calls['prepare_carousel'])}"
+
+            def publish(self, container_id):
+                fake._rec("publish", container_id)
+                if fake.publish_error:
+                    err, fake.publish_error = fake.publish_error, None
+                    if fake.status == "PUBLISHED":
+                        fake.published.append(fake.last_caption)
+                    raise err
+                fake.published.append(fake.last_caption)
                 return f"M{len(fake.published)}"
+
+            def container_status(self, container_id):
+                fake._rec("container_status", container_id)
+                return fake.status
 
         def refresh_token(token, **k):
             self._rec("refresh_token", token)
@@ -247,3 +263,46 @@ def test_next_topic_passed_for_preview_of_next_episode(settings):
     f = Fake()
     run_daily(settings, today=MON, deps=f.deps())
     assert f.calls["generate_post"][0][0][0].id == "t0"
+
+
+def test_publish_that_went_live_despite_error_is_not_reposted(settings):
+    put_state(settings, published_count=5, curriculum_index=5)
+    f = Fake(publish_error=InstagramError("timeout"), status="PUBLISHED")
+    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.FAILED
+    assert state(settings).inflight.number == 6
+    tue = MON + timedelta(days=1)
+    assert run_daily(settings, today=tue, deps=f.deps()) == Outcome.PUBLISHED
+    s = state(settings)
+    assert [h.number for h in s.history] == [6, 7]
+    assert s.history[0].date == MON.isoformat()
+    assert (s.published_count, s.curriculum_index, s.inflight) == (7, 7, None)
+    assert len(f.published) == 2  # No.6 once, No.7 once
+
+
+def test_inflight_published_today_stops_same_day_rerun(settings):
+    put_state(settings, published_count=5, curriculum_index=5)
+    f = Fake(publish_error=InstagramError("timeout"), status="PUBLISHED")
+    run_daily(settings, today=MON, deps=f.deps())
+    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.ALREADY_POSTED
+    assert len(f.published) == 1
+
+
+def test_finished_container_is_published_on_next_run_without_regenerating(settings):
+    put_state(settings, published_count=5, curriculum_index=5)
+    f = Fake(publish_error=InstagramError("5xx"), status="FINISHED")
+    run_daily(settings, today=MON, deps=f.deps())
+    gens = len(f.calls["generate_post"])
+    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.PUBLISHED
+    assert len(f.calls["generate_post"]) == gens
+    assert f.calls["publish"][-1][0] == ("CAR1",)
+    assert len(f.published) == 1 and state(settings).published_count == 6
+
+
+def test_expired_inflight_is_dropped_and_same_topic_regenerated(settings):
+    put_state(settings, published_count=5, curriculum_index=5)
+    f = Fake(publish_error=InstagramError("5xx"), status="EXPIRED")
+    run_daily(settings, today=MON, deps=f.deps())
+    tue = MON + timedelta(days=1)
+    assert run_daily(settings, today=tue, deps=f.deps()) == Outcome.PUBLISHED
+    s = state(settings)
+    assert s.history[0].topic_id == "t5" and s.inflight is None

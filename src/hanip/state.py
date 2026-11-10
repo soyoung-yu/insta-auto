@@ -30,12 +30,24 @@ class Pending:
 
 
 @dataclass
+class Inflight:
+    """A carousel container about to be published; kept until the outcome is known."""
+
+    number: int
+    topic_id: str
+    theme: str
+    date: str
+    container_id: str
+
+
+@dataclass
 class State:
     published_count: int = 0
     curriculum_index: int = 0
     history: list[HistoryEntry] = field(default_factory=list)
     pending: Pending | None = None
     token_refreshed_at: str | None = None
+    inflight: Inflight | None = None
 
 
 def load_state(path: Path) -> State:
@@ -48,6 +60,7 @@ def load_state(path: Path) -> State:
         history=[HistoryEntry(**h) for h in raw.get("history", [])],
         pending=Pending(**raw["pending"]) if raw.get("pending") else None,
         token_refreshed_at=raw.get("token_refreshed_at"),
+        inflight=Inflight(**raw["inflight"]) if raw.get("inflight") else None,
     )
 
 

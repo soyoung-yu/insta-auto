@@ -146,11 +146,13 @@ def generate_post(
     feedback: str | None = None,
     run=run_claude_json,
 ) -> Post:
-    raw = run(build_prompt(topic, next_topic, news, feedback))
     try:
-        return Post.model_validate(raw)
+        return Post.model_validate(run(build_prompt(topic, next_topic, news, feedback)))
+    except ClaudeError as e:
+        problem = f"이전 답을 JSON으로 읽을 수 없었어. 설명 없이 JSON 객체 하나만 출력해. ({e})"
     except ValidationError as e:
-        retry_feedback = "\n".join(filter(None, [feedback, f"이전 답의 형식 오류(꼭 고칠 것):\n{e}"]))
+        problem = f"이전 답의 형식 오류(꼭 고칠 것):\n{e}"
+    retry_feedback = "\n".join(filter(None, [feedback, problem]))
     raw = run(build_prompt(topic, next_topic, news, retry_feedback))
     try:
         return Post.model_validate(raw)

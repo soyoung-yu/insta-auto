@@ -36,7 +36,7 @@ cp .env.example .env
    git remote set-url origin https://github.com/soyoung-yu/insta-auto.git
    git push -u origin main
    ```
-3. `.env`의 `IMAGE_BASE_URL=https://raw.githubusercontent.com/soyoung-yu/insta-auto/main`
+3. `.env`의 `IMAGE_BASE_URL=https://raw.githubusercontent.com/soyoung-yu/insta-auto`
 4. 게시할 때마다 `posts/NNNN/`가 자동으로 커밋·push 됩니다. **main 브랜치에 있는 상태로 두세요.**
 
 ## ⑦ 커리큘럼 만들기

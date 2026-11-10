@@ -48,15 +48,18 @@ class InstagramClient:
         data = {"media_type": "CAROUSEL", "children": ",".join(children), "caption": caption}
         return self._post(f"{self.user_id}/media", data)["id"]
 
+    def container_status(self, container_id: str) -> str:
+        r = self.http.get(
+            f"{self.base}/{container_id}",
+            params={"fields": "status_code", "access_token": self.token},
+            timeout=TIMEOUT,
+        )
+        return _check(r).get("status_code", "")
+
     def wait_until_ready(self, container_id: str, timeout: int = 300) -> None:
         waited = 0
         while True:
-            r = self.http.get(
-                f"{self.base}/{container_id}",
-                params={"fields": "status_code", "access_token": self.token},
-                timeout=TIMEOUT,
-            )
-            status = _check(r).get("status_code")
+            status = self.container_status(container_id)
             if status == "FINISHED":
                 return
             if status in ("ERROR", "EXPIRED"):
@@ -69,13 +72,17 @@ class InstagramClient:
     def publish(self, container_id: str) -> str:
         return self._post(f"{self.user_id}/media_publish", {"creation_id": container_id})["id"]
 
-    def post_carousel(self, image_urls: list[str], caption: str) -> str:
+    def prepare_carousel(self, image_urls: list[str], caption: str) -> str:
+        """Create and wait for all containers; returns the carousel container id (not yet published)."""
         children = [self.create_image_item(u) for u in image_urls]
         for c in children:
             self.wait_until_ready(c)
         carousel = self.create_carousel(children, caption)
         self.wait_until_ready(carousel)
-        return self.publish(carousel)
+        return carousel
+
+    def post_carousel(self, image_urls: list[str], caption: str) -> str:
+        return self.publish(self.prepare_carousel(image_urls, caption))
 
 
 def refresh_token(token: str, *, session: requests.Session | None = None) -> tuple[str, int]:

@@ -17,9 +17,13 @@ def make_paths(tmp_path):
     return paths
 
 
-def recording_git(calls, commit_code=0):
+def recording_git(calls, commit_code=0, branch="main"):
     def git(args, **kwargs):
         calls.append(args)
+        if "--abbrev-ref" in args:
+            return subprocess.CompletedProcess(args, 0, stdout=branch + "\n", stderr="")
+        if args[-2:] == ["rev-parse", "HEAD"]:
+            return subprocess.CompletedProcess(args, 0, stdout="abc123\n", stderr="")
         code = commit_code if "commit" in args else 0
         return subprocess.CompletedProcess(args, code, stdout="nothing to commit" if code else "", stderr="")
 
@@ -48,7 +52,8 @@ def test_commits_only_post_dir_and_pushes(tmp_path):
 
 def test_returns_raw_urls_in_order(tmp_path):
     urls = publish_images(make_paths(tmp_path), number=3, repo_dir=tmp_path, base_url="https://x", git=recording_git([]), http_head=live_head, sleep=lambda s: None)
-    assert urls == [f"https://x/posts/0003/slide-{i:02d}.jpg" for i in range(1, 10)]
+    # commit SHA, not "main": a retried post can't be served stale cached images
+    assert urls == [f"https://x/abc123/posts/0003/slide-{i:02d}.jpg" for i in range(1, 10)]
 
 
 def test_nothing_to_commit_still_pushes(tmp_path):
@@ -76,10 +81,20 @@ def test_timeout_raises(tmp_path):
         publish_images(make_paths(tmp_path), number=3, repo_dir=tmp_path, base_url="https://x", git=recording_git([]), http_head=head, sleep=lambda s: None, wait_timeout=30)
 
 
+def test_refuses_when_not_on_main(tmp_path):
+    calls = []
+    with pytest.raises(ImageHostError, match="main"):
+        publish_images(make_paths(tmp_path), number=3, repo_dir=tmp_path, base_url="https://x", git=recording_git(calls, branch="feat/x"), http_head=live_head, sleep=lambda s: None)
+    assert not any("push" in c or "commit" in c for c in calls)
+
+
 def test_push_failure_raises(tmp_path):
+    ok = recording_git([])
+
     def git(args, **kwargs):
-        code = 1 if "push" in args else 0
-        return subprocess.CompletedProcess(args, code, stdout="", stderr="denied")
+        if "push" in args:
+            return subprocess.CompletedProcess(args, 1, stdout="", stderr="denied")
+        return ok(args, **kwargs)
 
     with pytest.raises(ImageHostError):
         publish_images(make_paths(tmp_path), number=3, repo_dir=tmp_path, base_url="https://x", git=git, http_head=live_head, sleep=lambda s: None)

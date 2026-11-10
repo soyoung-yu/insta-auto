@@ -69,3 +69,16 @@ def test_prompt_includes_news_next_topic_and_feedback():
     assert NEXT.title_ko in seen["p"]
     assert "2장 글자가 넘쳐" in seen["p"]
     assert TOPIC.title_ko in seen["p"]
+
+
+def test_generate_post_retries_once_on_non_json_answer():
+    calls = []
+
+    def run(p):
+        calls.append(p)
+        if len(calls) == 1:
+            raise ClaudeError("답변이 JSON이 아님")
+        return good()
+
+    assert generate_post(TOPIC, None, [], run=run).topic_id == "token"
+    assert "JSON" in calls[1]

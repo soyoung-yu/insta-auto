@@ -45,3 +45,11 @@ def test_already_published_on():
     s = State(history=[HistoryEntry(1, "2026-11-11", "token", "light", "m1")])
     assert already_published_on(s, "2026-11-11")
     assert not already_published_on(s, "2026-11-12")
+
+
+def test_roundtrip_with_inflight(tmp_path):
+    from hanip.state import Inflight
+
+    s = State(inflight=Inflight(6, "t5", "dark", "2026-11-16", "CAR1"))
+    save_state(s, tmp_path / "state.json")
+    assert load_state(tmp_path / "state.json") == s

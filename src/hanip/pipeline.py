@@ -24,6 +24,7 @@ from hanip.curriculum import load_curriculum
 from hanip.publish_images import publish_images
 from hanip.state import (
     HistoryEntry,
+    Inflight,
     Pending,
     State,
     already_published_on,
@@ -107,23 +108,69 @@ def _generate_and_render(settings, topic, next_topic, number, theme, out_dir, de
     raise ClaudeError(f"글자 넘침이 계속됨 ({feedback})")
 
 
+def _record(state: State, settings: Settings, *, number: int, day: str, topic_id: str, theme: str, media_id: str) -> None:
+    state.published_count += 1
+    state.curriculum_index += 1
+    state.history.append(HistoryEntry(number, day, topic_id, theme, media_id))
+    if state.pending and state.pending.number == number:
+        state.pending = None
+    state.inflight = None
+    save_state(state, settings.state_path)
+
+
 def _publish(settings: Settings, state: State, *, number: int, topic_id: str, theme: str, out_dir: Path, today: date, deps: Deps) -> Outcome:
     try:
         post = Post.model_validate_json((out_dir / "post.json").read_text())
         paths = [out_dir / f"slide-{i:02d}.jpg" for i in range(1, 10)]
         urls = deps.publish_images(paths, number=number, repo_dir=settings.repo_dir, base_url=settings.image_base_url)
-        media_id = deps.make_instagram(settings).post_carousel(urls, full_caption(post))
-    except Exception as e:  # noqa: BLE001 - report every failure, keep state for a retry
-        log.exception("publish failed")
+        client = deps.make_instagram(settings)
+        container = client.prepare_carousel(urls, full_caption(post))
+    except Exception as e:  # noqa: BLE001 - nothing is public yet; keep state for a retry
+        log.exception("publish preparation failed")
         deps.notify(APP, f"No.{number:02d} 게시 실패: {e}")
         return Outcome.FAILED
-    state.published_count += 1
-    state.curriculum_index += 1
-    state.history.append(HistoryEntry(number, today.isoformat(), topic_id, theme, media_id))
-    state.pending = None
+    # Remember the container before publishing: if media_publish succeeds but the response is lost,
+    # the next run checks this container instead of posting the same episode again.
+    state.inflight = Inflight(number, topic_id, theme, today.isoformat(), container)
     save_state(state, settings.state_path)
+    try:
+        media_id = client.publish(container)
+    except Exception as e:  # noqa: BLE001
+        log.exception("media_publish failed")
+        deps.notify(APP, f"No.{number:02d} 게시 결과를 알 수 없어요. 다음 실행에서 확인합니다: {e}")
+        return Outcome.FAILED
+    _record(state, settings, number=number, day=today.isoformat(), topic_id=topic_id, theme=theme, media_id=media_id)
     deps.notify(APP, f"No.{number:02d} 게시 완료")
     return Outcome.PUBLISHED
+
+
+def _resolve_inflight(settings: Settings, state: State, today: date, deps: Deps) -> Outcome | None:
+    """Settle a publish whose outcome was unknown. Returns an Outcome to stop, or None to continue."""
+    inf = state.inflight
+    if not inf:
+        return None
+    try:
+        client = deps.make_instagram(settings)
+        status = client.container_status(inf.container_id)
+        if status == "PUBLISHED":
+            _record(state, settings, number=inf.number, day=inf.date, topic_id=inf.topic_id, theme=inf.theme,
+                    media_id=f"container:{inf.container_id}")
+            deps.notify(APP, f"No.{inf.number:02d}은 이미 게시돼 있었어요. 기록만 정리했어요.")
+            return None
+        if status == "FINISHED":
+            media_id = client.publish(inf.container_id)
+            _record(state, settings, number=inf.number, day=today.isoformat(), topic_id=inf.topic_id, theme=inf.theme,
+                    media_id=media_id)
+            deps.notify(APP, f"No.{inf.number:02d} 게시 완료")
+            return Outcome.PUBLISHED
+    except Exception as e:  # noqa: BLE001 - unknown outcome: never risk a duplicate post
+        log.exception("in-flight check failed")
+        deps.notify(APP, f"No.{inf.number:02d} 게시 여부를 확인하지 못했어요: {e}")
+        return Outcome.FAILED
+    log.info("in-flight container %s is %s; dropping it", inf.container_id, status)
+    state.inflight = None
+    save_state(state, settings.state_path)
+    return None
 
 
 def run_daily(settings: Settings, *, today: date, deps: Deps | None = None) -> Outcome:
@@ -132,13 +179,15 @@ def run_daily(settings: Settings, *, today: date, deps: Deps | None = None) -> O
         return Outcome.SKIPPED_WEEKEND
     state = load_state(settings.state_path)
     day = today.isoformat()
+    settings = _maybe_refresh_token(settings, state, today, deps)
+    resolved = _resolve_inflight(settings, state, today, deps)
+    if resolved:
+        return resolved
     if already_published_on(state, day):
         return Outcome.ALREADY_POSTED
     if state.pending and state.pending.date == day:
         deps.open_file(Path(state.pending.dir) / "preview.html")
         return Outcome.PENDING_APPROVAL
-
-    settings = _maybe_refresh_token(settings, state, today, deps)
 
     topics = load_curriculum(settings.curriculum_path)
     if state.curriculum_index >= len(topics):
@@ -171,6 +220,9 @@ def run_daily(settings: Settings, *, today: date, deps: Deps | None = None) -> O
 def approve(settings: Settings, *, today: date, deps: Deps | None = None) -> Outcome:
     deps = deps or Deps()
     state = load_state(settings.state_path)
+    resolved = _resolve_inflight(settings, state, today, deps)
+    if resolved:
+        return resolved
     p = state.pending
     if not p or p.date != today.isoformat():
         return Outcome.NOTHING_TO_APPROVE
