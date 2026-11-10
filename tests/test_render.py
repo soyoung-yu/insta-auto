@@ -62,7 +62,7 @@ def test_dark_character_is_white_with_blue_star(post):
 def test_highlighter_question_titles_in_order(post):
     pages = bodies(post)
     titles = ["그래서 뭔데?", "뭐가 달라?", "헷갈리지 마!", "어디서 봤더라?", "어떻게 돌아가?",
-              "언제 알아야 해?", "요즘 어디에 쓰여?", "이건 조심!", "오늘 먹은 것"]
+              "언제 알아야 해?", "요즘 어디에 쓰여?", "이건 조심!", "오늘의 한입"]
     for page, title in zip(pages[1:], titles):
         assert f'<h2 class="hl">{title}</h2>' in page, title
 

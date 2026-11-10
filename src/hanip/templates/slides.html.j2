@@ -236,7 +236,7 @@ table.cmp { width: 100%; border-collapse: collapse; table-layout: fixed; }
 {% elif n == 10 %}
   {% set tt = post.total %}
   <div class="paper edge-top">
-    {{ head("오늘 먹은 것") }}
+    {{ head("오늘의 한입") }}
     {% for p in tt.points %}<div class="line"><span class="label fit" style="overflow:hidden">{{ loop.index }} {{ p }}</span><i class="leader"></i><span class="value">✓</span></div>{% endfor %}
     {% if tt.next_topic %}<div class="hr"></div>
     <div class="total"><span>NEXT</span><span class="v fit">{{ tt.next_topic }}</span></div>{% endif %}
