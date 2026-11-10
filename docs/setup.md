@@ -11,17 +11,17 @@
 - 프로필 편집 → 사용자 이름 → `hanip.byte`
 - 이미 쓰이고 있으면 `hanip.byte.kr`로 하고, `.env`의 `ACCOUNT_HANDLE=@hanip.byte.kr`로 맞춥니다.
 
-## ③ Meta 개발자 앱 만들기
-1. https://developers.facebook.com → 로그인 → **내 앱 → 앱 만들기**
-2. 사용 사례: **Instagram에서 메시지 및 콘텐츠 관리** (Instagram API, Instagram 로그인 방식)
-3. 앱 대시보드 → **Instagram → API 설정(Instagram 로그인)**
-4. **역할 → Instagram 테스터**에 위 계정을 추가하고, 인스타 앱(설정 → 웹사이트 권한 → 앱 및 웹사이트)에서 초대를 수락
-5. 권한: `instagram_business_basic`, `instagram_business_content_publish`
+## ③ Meta 개발자 앱 만들기 (통합 로그인)
+1. https://developers.facebook.com → 아무 페이스북 계정으로 로그인 → **내 앱 → 앱 만들기** (이 계정은 앱 관리용일 뿐, 게시는 인스타 계정으로 함)
+2. 사용 사례 **Instagram API** → **맞춤 설정** → **API setup with Unified login**
+3. **비즈니스 포트폴리오**를 만들어 연결 (무료, 개인도 가능)
+4. **앱 역할 → 역할 → Instagram 테스터**에 `hanip.byte` 추가 → instagram.com(웹)에서 hanip.byte로 로그인 → ≡ → 설정 → 웹사이트 권한 → 앱 및 웹사이트 → **테스터 초대** 수락
+   - 맞는 비밀번호로도 웹 로그인이 막히면 오류 문구의 "계정을 찾고 로그인해보세요"로 인증 코드 로그인
 
 ## ④ 토큰과 사용자 ID 받기
-1. API 설정 화면의 **액세스 토큰 생성**에서 계정을 연결하면 장기 토큰(60일)이 나옵니다.
-2. 같은 화면에 표시되는 Instagram 사용자 ID(숫자)를 확인합니다.
-3. 토큰은 50일마다 프로그램이 자동으로 갱신합니다(`var/token.json`).
+1. **1. 앱 구성** → **새로운 구성 만들기** (기본값, `instagram_basic`·`instagram_content_publish` 포함 확인). 리디렉션 URL은 비워 둠
+2. **2. 액세스 토큰 생성** → hanip.byte 줄의 숫자가 Instagram 사용자 ID → **토큰 생성** → 복사
+3. 이 토큰은 **시스템 사용자 토큰**이라 만료되지 않고, `graph.facebook.com`에서만 동작합니다 (`.env`의 `IG_GRAPH_HOST`, `IG_TOKEN_REFRESH=false` 기본값 그대로)
 
 ## ⑤ `.env` 작성
 ```bash

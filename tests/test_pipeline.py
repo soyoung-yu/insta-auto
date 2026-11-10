@@ -1,3 +1,4 @@
+import dataclasses
 import json
 from datetime import date, timedelta
 from pathlib import Path
@@ -226,7 +227,15 @@ def test_publish_failure_keeps_state(settings):
     assert (s.published_count, s.curriculum_index) == (5, 5) and f.notes
 
 
+def test_token_refresh_disabled_by_default(settings):
+    put_state(settings, published_count=5, curriculum_index=5, token_refreshed_at=None)
+    f = Fake()
+    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.PUBLISHED
+    assert "refresh_token" not in f.calls and not f.notes[:-1]
+
+
 def test_token_refreshed_after_50_days(settings):
+    settings = dataclasses.replace(settings, ig_token_refresh=True)
     put_state(settings, published_count=5, curriculum_index=5, token_refreshed_at=(MON - timedelta(days=51)).isoformat())
     f = Fake()
     run_daily(settings, today=MON, deps=f.deps())
@@ -237,6 +246,7 @@ def test_token_refreshed_after_50_days(settings):
 
 
 def test_token_not_refreshed_when_recent(settings):
+    settings = dataclasses.replace(settings, ig_token_refresh=True)
     put_state(settings, published_count=5, curriculum_index=5, token_refreshed_at=(MON - timedelta(days=10)).isoformat())
     f = Fake()
     run_daily(settings, today=MON, deps=f.deps())

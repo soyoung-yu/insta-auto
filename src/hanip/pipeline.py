@@ -53,7 +53,9 @@ class Outcome(StrEnum):
 
 
 def _make_instagram(settings: Settings):
-    return ig.InstagramClient(settings.ig_user_id, settings.ig_access_token, api_version=settings.ig_api_version)
+    return ig.InstagramClient(
+        settings.ig_user_id, settings.ig_access_token, api_version=settings.ig_api_version, host=settings.ig_graph_host
+    )
 
 
 @dataclass
@@ -74,6 +76,8 @@ def full_caption(post: Post) -> str:
 
 
 def _maybe_refresh_token(settings: Settings, state: State, today: date, deps: Deps) -> Settings:
+    if not settings.ig_token_refresh:
+        return settings
     last = date.fromisoformat(state.token_refreshed_at) if state.token_refreshed_at else None
     if last and (today - last).days < TOKEN_REFRESH_DAYS:
         return settings

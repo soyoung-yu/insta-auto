@@ -10,7 +10,8 @@ import time
 
 import requests
 
-GRAPH = "https://graph.instagram.com"
+GRAPH = "https://graph.instagram.com"  # Instagram-login tokens (refresh endpoint)
+DEFAULT_HOST = "graph.facebook.com"  # unified-login system-user tokens
 POLL_SECONDS = 5
 TIMEOUT = 30
 
@@ -31,10 +32,10 @@ def _check(r: requests.Response) -> dict:
 
 
 class InstagramClient:
-    def __init__(self, user_id: str, token: str, *, api_version: str, session: requests.Session | None = None, sleep=time.sleep):
+    def __init__(self, user_id: str, token: str, *, api_version: str, host: str = DEFAULT_HOST, session: requests.Session | None = None, sleep=time.sleep):
         self.user_id = user_id
         self.token = token
-        self.base = f"{GRAPH}/{api_version}"
+        self.base = f"https://{host}/{api_version}"
         self.http = session or requests.Session()
         self.sleep = sleep
 

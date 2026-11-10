@@ -6,7 +6,7 @@ from responses import matchers
 
 from hanip.instagram import InstagramClient, InstagramError, refresh_token
 
-BASE = "https://graph.instagram.com/v23.0"
+BASE = "https://graph.facebook.com/v23.0"  # system-user token (unified login) works only here
 URLS = [f"https://x/slide-{i:02d}.jpg" for i in range(1, 10)]
 
 

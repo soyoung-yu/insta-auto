@@ -20,6 +20,9 @@ class Settings:
     var_dir: Path
     out_dir: Path
     account_handle: str = "@hanip.byte"
+    # Unified-login system-user tokens work on graph.facebook.com and never expire.
+    ig_graph_host: str = "graph.facebook.com"
+    ig_token_refresh: bool = False
 
     @property
     def state_path(self) -> Path:
@@ -51,4 +54,6 @@ def load_settings(env_file: Path | None = None, *, repo_dir: Path | None = None)
         var_dir=var_dir,
         out_dir=repo / "out",
         account_handle=os.environ.get("ACCOUNT_HANDLE", "@hanip.byte"),
+        ig_graph_host=os.environ.get("IG_GRAPH_HOST", "graph.facebook.com"),
+        ig_token_refresh=os.environ.get("IG_TOKEN_REFRESH", "false").lower() in ("1", "true", "yes"),
     )

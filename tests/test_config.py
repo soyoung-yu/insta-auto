@@ -12,7 +12,7 @@ def _env(tmp_path, extra=""):
 
 
 def test_reads_env_file(tmp_path, monkeypatch):
-    for k in ("IG_USER_ID", "IG_ACCESS_TOKEN", "IMAGE_BASE_URL", "IG_API_VERSION"):
+    for k in ("IG_USER_ID", "IG_ACCESS_TOKEN", "IMAGE_BASE_URL", "IG_API_VERSION", "IG_GRAPH_HOST", "IG_TOKEN_REFRESH"):
         monkeypatch.delenv(k, raising=False)
     s = load_settings(_env(tmp_path), repo_dir=tmp_path)
     assert s.ig_user_id == "123"
@@ -21,6 +21,8 @@ def test_reads_env_file(tmp_path, monkeypatch):
     assert s.ig_api_version == "v23.0"
     assert s.account_handle == "@hanip.byte"
     assert s.var_dir == tmp_path / "var"
+    assert s.ig_graph_host == "graph.facebook.com"
+    assert s.ig_token_refresh is False  # system-user tokens don't expire
 
 
 def test_token_file_overrides_env(tmp_path, monkeypatch):
