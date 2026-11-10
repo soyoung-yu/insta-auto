@@ -1,117 +1,75 @@
 [
   {
-    "id": "file-path",
-    "title_ko": "파일 경로",
-    "keyword_en": "file path",
-    "level": 1
-  },
-  {
-    "id": "file-extension",
-    "title_ko": "파일 확장자",
-    "keyword_en": "file extension",
-    "level": 1
-  },
-  {
-    "id": "plain-text",
-    "title_ko": "플레인 텍스트",
-    "keyword_en": "plain text",
-    "level": 1
-  },
-  {
-    "id": "markdown",
-    "title_ko": "마크다운",
-    "keyword_en": "markdown",
-    "level": 1
-  },
-  {
     "id": "client-server",
     "title_ko": "클라이언트와 서버",
-    "keyword_en": "client server",
+    "keyword_en": "client server architecture",
     "level": 1
   },
   {
-    "id": "url",
-    "title_ko": "URL",
-    "keyword_en": "URL",
+    "id": "frontend",
+    "title_ko": "프론트엔드",
+    "keyword_en": "frontend",
     "level": 1
   },
   {
-    "id": "cloud-computing",
-    "title_ko": "클라우드",
-    "keyword_en": "cloud computing",
+    "id": "backend",
+    "title_ko": "백엔드",
+    "keyword_en": "backend",
     "level": 1
   },
   {
-    "id": "open-source",
-    "title_ko": "오픈소스",
-    "keyword_en": "open source",
+    "id": "http",
+    "title_ko": "HTTP",
+    "keyword_en": "HTTP protocol",
     "level": 1
   },
   {
-    "id": "large-language-model",
-    "title_ko": "대형 언어 모델",
-    "keyword_en": "large language model",
+    "id": "http-methods",
+    "title_ko": "HTTP 메서드",
+    "keyword_en": "HTTP methods",
     "level": 1
   },
   {
-    "id": "prompt",
-    "title_ko": "프롬프트",
-    "keyword_en": "prompt",
+    "id": "status-codes",
+    "title_ko": "상태 코드",
+    "keyword_en": "HTTP status code",
     "level": 1
   },
   {
-    "id": "token",
-    "title_ko": "토큰",
-    "keyword_en": "token",
+    "id": "dns",
+    "title_ko": "도메인과 DNS",
+    "keyword_en": "DNS",
     "level": 1
   },
   {
-    "id": "ai-agent",
-    "title_ko": "AI 에이전트",
-    "keyword_en": "AI agent",
+    "id": "ip-port",
+    "title_ko": "IP와 포트",
+    "keyword_en": "IP address port",
     "level": 1
   },
   {
-    "id": "terminal",
-    "title_ko": "터미널",
-    "keyword_en": "terminal",
-    "level": 2
+    "id": "cookie-session",
+    "title_ko": "쿠키와 세션",
+    "keyword_en": "cookies sessions",
+    "level": 1
   },
   {
-    "id": "command-line-interface",
-    "title_ko": "명령줄 인터페이스",
-    "keyword_en": "command line interface",
-    "level": 2
+    "id": "https-tls",
+    "title_ko": "HTTPS(TLS)",
+    "keyword_en": "HTTPS TLS",
+    "level": 1
   },
   {
-    "id": "shell-command",
-    "title_ko": "셸 명령어",
-    "keyword_en": "shell command",
-    "level": 2
+    "id": "cdn",
+    "title_ko": "CDN",
+    "keyword_en": "CDN",
+    "level": 1
   },
   {
-    "id": "package-manager",
-    "title_ko": "패키지 매니저",
-    "keyword_en": "package manager",
-    "level": 2
-  },
-  {
-    "id": "environment-variable",
-    "title_ko": "환경 변수",
-    "keyword_en": "environment variable",
-    "level": 2
-  },
-  {
-    "id": "json",
-    "title_ko": "JSON",
-    "keyword_en": "JSON",
-    "level": 2
-  },
-  {
-    "id": "config-file",
-    "title_ko": "설정 파일",
-    "keyword_en": "configuration file",
-    "level": 2
+    "id": "load-balancer",
+    "title_ko": "로드 밸런서",
+    "keyword_en": "load balancer",
+    "level": 1
   },
   {
     "id": "api",
@@ -120,219 +78,237 @@
     "level": 2
   },
   {
-    "id": "http-request",
-    "title_ko": "HTTP 요청",
-    "keyword_en": "HTTP request",
-    "level": 2
-  },
-  {
-    "id": "api-key",
-    "title_ko": "API 키",
-    "keyword_en": "API key",
-    "level": 2
-  },
-  {
-    "id": "context-window",
-    "title_ko": "컨텍스트 윈도우",
-    "keyword_en": "context window",
-    "level": 2
-  },
-  {
-    "id": "hallucination",
-    "title_ko": "할루시네이션",
-    "keyword_en": "AI hallucination",
-    "level": 2
-  },
-  {
-    "id": "git",
-    "title_ko": "Git",
-    "keyword_en": "git version control",
-    "level": 3
-  },
-  {
-    "id": "commit",
-    "title_ko": "커밋",
-    "keyword_en": "git commit",
-    "level": 3
-  },
-  {
-    "id": "branch",
-    "title_ko": "브랜치",
-    "keyword_en": "git branch",
-    "level": 3
-  },
-  {
-    "id": "pull-request",
-    "title_ko": "풀 리퀘스트",
-    "keyword_en": "pull request",
-    "level": 3
-  },
-  {
     "id": "rest-api",
     "title_ko": "REST API",
     "keyword_en": "REST API",
-    "level": 3
+    "level": 2
   },
   {
-    "id": "http-status-code",
-    "title_ko": "상태 코드",
-    "keyword_en": "HTTP status code",
-    "level": 3
+    "id": "endpoint",
+    "title_ko": "엔드포인트",
+    "keyword_en": "API endpoint",
+    "level": 2
   },
   {
-    "id": "authentication-authorization",
-    "title_ko": "인증과 인가",
-    "keyword_en": "authentication authorization",
-    "level": 3
+    "id": "request-response-json",
+    "title_ko": "요청과 응답(JSON)",
+    "keyword_en": "JSON API",
+    "level": 2
   },
   {
-    "id": "temperature",
-    "title_ko": "샘플링 온도",
-    "keyword_en": "LLM temperature",
-    "level": 3
-  },
-  {
-    "id": "system-prompt",
-    "title_ko": "시스템 프롬프트",
-    "keyword_en": "system prompt",
-    "level": 3
-  },
-  {
-    "id": "tool-calling",
-    "title_ko": "도구 호출",
-    "keyword_en": "tool calling",
-    "level": 3
-  },
-  {
-    "id": "structured-output",
-    "title_ko": "구조화된 출력",
-    "keyword_en": "structured output",
-    "level": 3
-  },
-  {
-    "id": "embedding",
-    "title_ko": "임베딩",
-    "keyword_en": "embedding",
-    "level": 3
-  },
-  {
-    "id": "vector-database",
-    "title_ko": "벡터 데이터베이스",
-    "keyword_en": "vector database",
-    "level": 4
-  },
-  {
-    "id": "rag",
-    "title_ko": "RAG",
-    "keyword_en": "retrieval augmented generation",
-    "level": 4
-  },
-  {
-    "id": "webhook",
-    "title_ko": "웹훅",
-    "keyword_en": "webhook",
-    "level": 4
-  },
-  {
-    "id": "rate-limit",
-    "title_ko": "레이트 리밋",
-    "keyword_en": "API rate limit",
-    "level": 4
-  },
-  {
-    "id": "asynchronous-processing",
-    "title_ko": "비동기 처리",
-    "keyword_en": "asynchronous programming",
-    "level": 4
-  },
-  {
-    "id": "container",
-    "title_ko": "컨테이너",
-    "keyword_en": "software container",
-    "level": 4
-  },
-  {
-    "id": "sandbox",
-    "title_ko": "샌드박스",
-    "keyword_en": "sandbox",
-    "level": 4
-  },
-  {
-    "id": "model-context-protocol",
-    "title_ko": "MCP",
-    "keyword_en": "model context protocol",
-    "level": 4
-  },
-  {
-    "id": "agent-loop",
-    "title_ko": "에이전트 루프",
-    "keyword_en": "agent loop",
-    "level": 4
-  },
-  {
-    "id": "multi-agent",
-    "title_ko": "멀티 에이전트",
-    "keyword_en": "multi-agent system",
-    "level": 4
-  },
-  {
-    "id": "prompt-caching",
-    "title_ko": "프롬프트 캐싱",
-    "keyword_en": "prompt caching",
-    "level": 4
+    "id": "api-auth-jwt",
+    "title_ko": "API 인증(토큰·JWT)",
+    "keyword_en": "JWT authentication",
+    "level": 2
   },
   {
     "id": "oauth",
     "title_ko": "OAuth",
     "keyword_en": "OAuth",
-    "level": 4
+    "level": 2
   },
   {
-    "id": "prompt-injection",
-    "title_ko": "프롬프트 인젝션",
-    "keyword_en": "prompt injection",
-    "level": 5
+    "id": "webhook",
+    "title_ko": "웹훅",
+    "keyword_en": "webhook",
+    "level": 2
   },
   {
-    "id": "jailbreak",
-    "title_ko": "탈옥",
-    "keyword_en": "AI jailbreak",
-    "level": 5
+    "id": "rate-limit",
+    "title_ko": "레이트 리밋",
+    "keyword_en": "rate limiting",
+    "level": 2
   },
   {
-    "id": "least-privilege",
-    "title_ko": "최소 권한 원칙",
-    "keyword_en": "principle of least privilege",
-    "level": 5
+    "id": "api-gateway",
+    "title_ko": "API 게이트웨이",
+    "keyword_en": "API gateway",
+    "level": 2
   },
   {
-    "id": "secrets-management",
-    "title_ko": "시크릿 관리",
-    "keyword_en": "secrets management",
-    "level": 5
+    "id": "graphql",
+    "title_ko": "GraphQL",
+    "keyword_en": "GraphQL",
+    "level": 2
   },
   {
-    "id": "fine-tuning",
-    "title_ko": "파인튜닝",
-    "keyword_en": "fine-tuning",
-    "level": 5
+    "id": "database",
+    "title_ko": "데이터베이스",
+    "keyword_en": "database",
+    "level": 3
   },
   {
-    "id": "llm-evaluation",
-    "title_ko": "평가(Evals)",
-    "keyword_en": "LLM evaluation",
-    "level": 5
+    "id": "sql-nosql",
+    "title_ko": "SQL vs NoSQL",
+    "keyword_en": "SQL NoSQL",
+    "level": 3
   },
   {
-    "id": "observability",
-    "title_ko": "관측 가능성",
-    "keyword_en": "observability",
-    "level": 5
+    "id": "index",
+    "title_ko": "인덱스",
+    "keyword_en": "database index",
+    "level": 3
+  },
+  {
+    "id": "transaction",
+    "title_ko": "트랜잭션",
+    "keyword_en": "database transaction",
+    "level": 3
+  },
+  {
+    "id": "orm",
+    "title_ko": "ORM",
+    "keyword_en": "ORM",
+    "level": 3
+  },
+  {
+    "id": "cache-redis",
+    "title_ko": "캐시(Redis)",
+    "keyword_en": "Redis cache",
+    "level": 3
+  },
+  {
+    "id": "message-queue",
+    "title_ko": "메시지 큐",
+    "keyword_en": "message queue",
+    "level": 3
+  },
+  {
+    "id": "object-storage",
+    "title_ko": "오브젝트 스토리지(S3)",
+    "keyword_en": "object storage S3",
+    "level": 3
+  },
+  {
+    "id": "server-linux",
+    "title_ko": "서버와 리눅스",
+    "keyword_en": "Linux server",
+    "level": 3
+  },
+  {
+    "id": "process-thread",
+    "title_ko": "프로세스와 스레드",
+    "keyword_en": "process thread",
+    "level": 3
+  },
+  {
+    "id": "env-var",
+    "title_ko": "환경 변수",
+    "keyword_en": "environment variables",
+    "level": 3
+  },
+  {
+    "id": "virtual-machine",
+    "title_ko": "가상머신",
+    "keyword_en": "virtual machine",
+    "level": 3
+  },
+  {
+    "id": "container-docker",
+    "title_ko": "컨테이너(Docker)",
+    "keyword_en": "Docker container",
+    "level": 3
+  },
+  {
+    "id": "kubernetes",
+    "title_ko": "쿠버네티스",
+    "keyword_en": "Kubernetes",
+    "level": 3
+  },
+  {
+    "id": "cloud-iaas-paas-saas",
+    "title_ko": "IaaS·PaaS·SaaS",
+    "keyword_en": "IaaS PaaS SaaS",
+    "level": 3
+  },
+  {
+    "id": "serverless",
+    "title_ko": "서버리스",
+    "keyword_en": "serverless",
+    "level": 3
+  },
+  {
+    "id": "deploy",
+    "title_ko": "배포",
+    "keyword_en": "deployment",
+    "level": 3
   },
   {
     "id": "ci-cd",
     "title_ko": "CI/CD",
     "keyword_en": "CI/CD",
+    "level": 3
+  },
+  {
+    "id": "logging",
+    "title_ko": "로그",
+    "keyword_en": "logging",
+    "level": 3
+  },
+  {
+    "id": "monitoring",
+    "title_ko": "모니터링",
+    "keyword_en": "monitoring",
+    "level": 3
+  },
+  {
+    "id": "git",
+    "title_ko": "Git",
+    "keyword_en": "git",
+    "level": 4
+  },
+  {
+    "id": "branch-merge",
+    "title_ko": "브랜치와 머지",
+    "keyword_en": "git branch merge",
+    "level": 4
+  },
+  {
+    "id": "pull-request",
+    "title_ko": "풀 리퀘스트",
+    "keyword_en": "pull request",
+    "level": 4
+  },
+  {
+    "id": "package-manager",
+    "title_ko": "패키지 매니저와 의존성",
+    "keyword_en": "package manager dependencies",
+    "level": 4
+  },
+  {
+    "id": "virtualenv",
+    "title_ko": "가상환경",
+    "keyword_en": "virtual environment",
+    "level": 4
+  },
+  {
+    "id": "testing",
+    "title_ko": "테스트 코드",
+    "keyword_en": "unit testing",
+    "level": 4
+  },
+  {
+    "id": "types",
+    "title_ko": "타입",
+    "keyword_en": "type system",
+    "level": 4
+  },
+  {
+    "id": "code-review",
+    "title_ko": "코드 리뷰",
+    "keyword_en": "code review",
+    "level": 4
+  },
+  {
+    "id": "sync-async",
+    "title_ko": "동기와 비동기",
+    "keyword_en": "async programming",
+    "level": 5
+  },
+  {
+    "id": "timeout-retry",
+    "title_ko": "타임아웃과 재시도",
+    "keyword_en": "timeout retry",
     "level": 5
   },
   {
@@ -342,21 +318,45 @@
     "level": 5
   },
   {
-    "id": "context-engineering",
-    "title_ko": "컨텍스트 엔지니어링",
-    "keyword_en": "context engineering",
+    "id": "scalability",
+    "title_ko": "확장성(스케일 업·아웃)",
+    "keyword_en": "horizontal scaling",
     "level": 5
   },
   {
-    "id": "human-in-the-loop",
-    "title_ko": "휴먼 인 더 루프",
-    "keyword_en": "human in the loop",
+    "id": "monolith-msa",
+    "title_ko": "모놀리스와 MSA",
+    "keyword_en": "microservices monolith",
     "level": 5
   },
   {
-    "id": "guardrails",
-    "title_ko": "가드레일",
-    "keyword_en": "AI guardrails",
+    "id": "incident",
+    "title_ko": "장애 대응",
+    "keyword_en": "incident response",
+    "level": 5
+  },
+  {
+    "id": "concurrency-lock",
+    "title_ko": "동시성과 락",
+    "keyword_en": "concurrency lock",
+    "level": 5
+  },
+  {
+    "id": "least-privilege",
+    "title_ko": "최소 권한",
+    "keyword_en": "least privilege",
+    "level": 5
+  },
+  {
+    "id": "secrets",
+    "title_ko": "시크릿 관리",
+    "keyword_en": "secrets management",
+    "level": 5
+  },
+  {
+    "id": "architecture-diagram",
+    "title_ko": "아키텍처 다이어그램 읽기",
+    "keyword_en": "software architecture diagram",
     "level": 5
   }
 ]
