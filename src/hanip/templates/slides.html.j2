@@ -72,9 +72,18 @@ table.cmp { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .myth .w .mk { color: {{ c.muted }}; }
 .myth .r .mk { color: {{ c.accent }}; }
 
-.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.tile { border: 4px solid {{ c.edge }}; border-radius: 22px; padding: 30px 28px; font: 400 34px/1.4 "Pretendard", sans-serif; min-height: 210px; overflow: hidden; }
-.tile b { display: block; font: 800 40px "Pretendard", sans-serif; margin-bottom: 12px; color: {{ c.accent }}; }
+/* example = relationship: [src] —action→ [dst] */
+.ex { margin-bottom: 30px; }
+.exname { font: 700 30px "D2Coding", monospace; color: {{ c.muted }}; margin-bottom: 10px; }
+.rel, .solo { display: flex; align-items: center; gap: 0; }
+.rel .src, .rel .dst, .solo .src { flex: 0 0 auto; font: 800 38px "Pretendard", sans-serif; padding: 14px 22px; border-radius: 16px; white-space: nowrap; }
+.src { background: {{ c.a_bg }}; color: {{ c.a_fg }}; }
+.dst { background: {{ c.b_bg }}; color: {{ c.b_fg }}; }
+.act { flex: 1 1 auto; min-width: 120px; position: relative; text-align: center; padding: 0 14px 18px; }
+.act em { display: block; font: 600 30px "Pretendard", sans-serif; font-style: normal; color: {{ c.text }}; white-space: nowrap; overflow: hidden; }
+.act i { position: absolute; left: 14px; right: 26px; bottom: 6px; border-bottom: 4px solid {{ c.muted }}; }
+.act i::after { content: ""; position: absolute; right: -18px; top: -10px; border: 12px solid transparent; border-left: 18px solid {{ c.muted }}; }
+.solo .note { font: 500 34px "Pretendard", sans-serif; margin-left: 24px; white-space: nowrap; overflow: hidden; }
 
 .bubble { position: relative; font: 600 40px/1.4 "Pretendard", sans-serif; padding: 26px 36px; border-radius: 40px; background: {{ c.bubble }}; margin-bottom: 26px; overflow: hidden; }
 .bubble::before { content: "✓"; color: {{ c.accent }}; font-weight: 900; margin-right: 18px; }
@@ -178,18 +187,19 @@ table.cmp { width: 100%; border-collapse: collapse; table-layout: fixed; }
 {% elif n == 5 %}
   <div class="paper edge-both">
     {{ head("어디서 봤더라?") }}
-    <div class="tiles">
-      {% for r in post.menu.items %}<div class="tile"><b>{{ r.label }}</b><span class="fit">{{ r.value }}</span></div>{% endfor %}
+    {% for e in post.menu.items %}
+    <div class="ex">
+      <div class="exname">{{ e.name }}</div>
+      {% if e.dst %}
+      <div class="rel"><span class="src">{{ e.src }}</span><span class="act"><em class="fit">{{ e.action }}</em><i></i></span><span class="dst">{{ e.dst }}</span></div>
+      {% else %}
+      <div class="solo"><span class="src">{{ e.src }}</span><span class="note fit">{{ e.action }}</span></div>
+      {% endif %}
     </div>
+    {% endfor %}
   </div>
 
 {% elif n == 6 %}
-  <div class="paper edge-both">
-    {{ head("언제 알아야 해?") }}
-    {% for s in post.options.situations %}<div class="bubble{{ ' r' if loop.index is even else '' }} fit">{{ s }}</div>{% endfor %}
-  </div>
-
-{% elif n == 7 %}
   <div class="paper edge-both">
     {{ head("어떻게 돌아가?") }}
     <div class="flow">
@@ -198,6 +208,12 @@ table.cmp { width: 100%; border-collapse: collapse; table-layout: fixed; }
         <div class="node n{{ s.who[0] }}"><span class="fit"><b>{{ loop.index }}</b>{{ s.text }}</span></div>
       {% endfor %}
     </div>
+  </div>
+
+{% elif n == 7 %}
+  <div class="paper edge-both">
+    {{ head("언제 알아야 해?") }}
+    {% for s in post.options.situations %}<div class="bubble{{ ' r' if loop.index is even else '' }} fit">{{ s }}</div>{% endfor %}
   </div>
 
 {% elif n == 8 %}

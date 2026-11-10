@@ -77,8 +77,17 @@ class Confusion(BaseModel):
     items: Annotated[list[Myth], Field(min_length=2, max_length=3)]
 
 
+class Example(BaseModel):
+    """A real-world case drawn as [src] —action→ [dst]; dst is None when there is no counterpart."""
+
+    name: Str10
+    src: Str10
+    action: Str8
+    dst: Annotated[str, Field(min_length=1, max_length=10)] | None = None
+
+
 class Menu(BaseModel):
-    items: Annotated[list[Row], Field(min_length=3, max_length=4)]
+    items: Annotated[list[Example], Field(min_length=3, max_length=4)]
 
 
 class Options(BaseModel):

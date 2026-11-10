@@ -17,9 +17,9 @@
 2. definition: 한 문장 정의. 대비되는 두 부분이 있으면 쉼표로 나눠("요청하면 클라이언트, 응답하면 서버야.") + 항목 3개(label/value)
 3. compare: 이 개념을 이해하는 데 핵심인 두 대상을 비교. a/b의 name은 비교 대상 이름 그대로(예: "클라이언트", "서버"), caption은 짧은 설명. a와 b의 rows는 **같은 label을 같은 순서로** 2~3개(위치, 하는 일, 예시처럼) + conclusion
 4. confusion (헷갈리지 마!): 이 개념에서 사람들이 자주 헷갈리는 점 2~3개. 비슷한 용어와의 차이(예: 서버 vs 호스트), 흔한 오해를 wrong(오해) / right(실제)로
-5. menu (어디서 봤더라?): 일상·업무에서 마주치는 대표 사례 3~4개(4개 권장). label=사례 이름, value=한 줄 설명
-6. options (언제 알아야 해?): 이 개념을 알아야 하는 실제 상황 3~4개. 데이터 분석가·기획자 같은 비개발자가 실무에서 겪을 법한 상황
-7. steps (어떻게 돌아가?): 실제로 처리되는 순서 3~5단계. 각 단계의 who는 그 단계를 하는 주체가 compare.a면 "a", compare.b면 "b", 둘 다 아니면 "other"
+5. menu (어디서 봤더라?): 일상·업무에서 마주치는 대표 사례 3~4개(4개 권장). 각 사례를 "누가(src) 누구에게(dst) 무엇을(action)"로 써. 예: name "웹 서핑", src "웹 브라우저", action "페이지 요청", dst "웹 서버". src는 compare.a 쪽, dst는 compare.b 쪽 역할이 되게. 관계로 나타낼 수 없는 주제면 dst는 null, action에 짧은 설명
+6. steps (어떻게 돌아가?): 실제로 처리되는 순서 3~5단계. 각 단계의 who는 그 단계를 하는 주체가 compare.a면 "a", compare.b면 "b", 둘 다 아니면 "other"
+7. options (언제 알아야 해?): 이 개념을 알아야 하는 실제 상황 3~4개. 데이터 분석가·기획자 같은 비개발자가 실무에서 겪을 법한 상황
 8. special (요즘 어디에 쓰여?): 아래 "최근 소식"에서 **오늘 개념이 실제로 쓰인 사례**만 0~3개. title은 원문 제목을 짧게 줄여도 되지만 지어내지 마. why는 그 소식에서 오늘 개념이 어떻게 쓰였는지 한 줄. 맞는 게 없으면 news는 [] 그리고 fallback에 "요즘 이 개념이 어디에 쓰이는지" 일반 설명
 9. caution (이건 조심!): 조심할 점 3개. title(무엇을) + reason(왜)
 10. total (오늘 먹은 것): 오늘 배운 3줄 요약 + next_topic(위의 다음 편 주제를 그대로. 없으면 null)
@@ -31,6 +31,7 @@
 - definition.definition 30, 모든 label 8, 모든 value 14
 - compare.a/b.name 8, caption 12, rows[].label 4, rows[].value 8, compare.conclusion 20
 - confusion.items[].wrong 20, right 28
+- menu.items[].name 10, src 10, action 8, dst 10
 - options.situations[] 각 18, steps.steps[].text 각 14
 - special.news[].title 24, source 12, why 28, fallback 40
 - caution.items[].title 14, reason 20
@@ -52,7 +53,7 @@ JSON 객체 하나만 출력. 설명 문장이나 마크다운 금지.
   "definition": {"definition": "", "rows": [{"label": "", "value": ""}]},
   "compare": {"a": {"name": "", "caption": "", "rows": [{"label": "", "value": ""}]}, "b": {...}, "conclusion": ""},
   "confusion": {"items": [{"wrong": "", "right": ""}]},
-  "menu": {"items": [{"label": "", "value": ""}]},
+  "menu": {"items": [{"name": "", "src": "", "action": "", "dst": ""}]},
   "options": {"situations": [""]},
   "steps": {"steps": [{"text": "", "who": "a"}]},
   "special": {"news": [{"title": "", "source": "", "why": ""}], "fallback": null},

@@ -61,8 +61,8 @@ def test_dark_character_is_white_with_blue_star(post):
 
 def test_highlighter_question_titles_in_order(post):
     pages = bodies(post)
-    titles = ["그래서 뭔데?", "뭐가 달라?", "헷갈리지 마!", "어디서 봤더라?", "언제 알아야 해?",
-              "어떻게 돌아가?", "요즘 어디에 쓰여?", "이건 조심!", "오늘 먹은 것"]
+    titles = ["그래서 뭔데?", "뭐가 달라?", "헷갈리지 마!", "어디서 봤더라?", "어떻게 돌아가?",
+              "언제 알아야 해?", "요즘 어디에 쓰여?", "이건 조심!", "오늘 먹은 것"]
     for page, title in zip(pages[1:], titles):
         assert f'<h2 class="hl">{title}</h2>' in page, title
 
@@ -101,16 +101,27 @@ def test_confusion_shows_wrong_then_right(post):
     assert page.count('class="myth"') == 2
 
 
-def test_examples_are_tiles(post):
-    assert bodies(post)[4].count('class="tile"') == 4
+def test_examples_show_who_asks_whom_for_what(post):
+    page = bodies(post)[4]
+    assert page.count('class="rel"') == 4
+    first = page.index("웹 브라우저")
+    assert first < page.index("페이지 요청") < page.index("웹 서버")
+    assert '<span class="src">웹 브라우저</span>' in page and '<span class="dst">웹 서버</span>' in page
+
+
+def test_example_without_target_is_a_plain_card(post):
+    p = post.model_copy(deep=True)
+    p.menu.items[0].dst = None
+    page = bodies(p)[4]
+    assert page.count('class="rel"') == 3 and page.count('class="solo"') == 1
 
 
 def test_situations_are_bubbles(post):
-    assert bodies(post)[5].count('class="bubble') == 3
+    assert bodies(post)[6].count('class="bubble') == 3
 
 
 def test_flow_nodes_colored_by_actor(post):
-    page = bodies(post)[6]
+    page = bodies(post)[5]
     assert page.count('class="node na"') == 2 and page.count('class="node nb"') == 2
     assert page.count('class="node no"') == 1
     assert page.count('class="arrow"') == 4
