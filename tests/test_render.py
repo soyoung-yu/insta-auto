@@ -148,3 +148,12 @@ def test_plain_section_titles(post):
 def test_compare_uses_concept_names(post):
     page = build_html(post, number=1, theme="light", handle="h")[2]
     assert ">영어<" in page and ">한글<" in page
+
+
+def test_paper_edges_mid_pages_torn_both_ends_last_page_torn_top_only(post):
+    pages = [p.split("</style>")[1] for p in build_html(post, number=1, theme="light", handle="h")]
+    assert "class=\"paper" not in pages[0]
+    for n in range(2, 9):
+        assert 'class="paper edge-both' in pages[n - 1], n
+        assert "edge-top" not in pages[n - 1], n
+    assert 'class="paper edge-top' in pages[8] and "edge-both" not in pages[8]

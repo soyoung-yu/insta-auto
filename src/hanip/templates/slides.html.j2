@@ -37,7 +37,17 @@ body {
   box-shadow: inset 0 0 0 4px {{ c.edge }};
   padding: 56px 56px 80px;
   font-family: "D2Coding", monospace;
-  -webkit-mask: radial-gradient(circle 16px at 50% 100%, transparent 98%, #000) 0 0 / 40px 100%;
+}
+/* torn (zigzag) edges: mid pages are torn at both ends (the paper keeps going), the last page only at the top */
+.paper.edge-both {
+  padding-top: 80px;
+  -webkit-mask:
+    radial-gradient(circle 16px at 50% 0, transparent 98%, #000) top / 40px 51% repeat-x,
+    radial-gradient(circle 16px at 50% 100%, transparent 98%, #000) bottom / 40px 51% repeat-x;
+}
+.paper.edge-top {
+  padding-top: 80px; padding-bottom: 56px;
+  -webkit-mask: radial-gradient(circle 16px at 50% 0, transparent 98%, #000) top / 40px 100% repeat-x;
 }
 .paper.warn { box-shadow: inset 0 0 0 6px {{ c.warn_border }}; }
 .shop { text-align: center; font-weight: 700; font-size: 54px; letter-spacing: 2px; margin-bottom: 30px; }
@@ -60,7 +70,7 @@ body {
 .band { background: #ffd166; color: #1b1430; font-weight: 700; font-size: 38px; text-align: center; padding: 10px; margin: 8px 0 22px; }
 
 .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
-.two .paper { padding: 44px 28px 70px; min-width: 0; }
+.two .paper { padding: 70px 28px 70px; min-width: 0; }
 .two .shop { font-size: 46px; }
 .two .line { font-size: 32px; }
 .two .line .leader { margin: 0 8px; min-width: 12px; }
@@ -103,7 +113,7 @@ body {
 
 {% if n == 2 %}
   {% set d = post.definition %}
-  <div class="paper">
+  <div class="paper edge-both">
     <div class="shop">정의</div>
     <div class="def fit">{{ d.definition }}</div>
     <div class="hr"></div>
@@ -115,7 +125,7 @@ body {
   <div class="shop">비교</div>
   <div class="two">
   {% for s in [cp.a, cp.b] %}
-    <div class="paper">
+    <div class="paper edge-both">
       <div class="shop fit" style="white-space:nowrap;overflow:hidden">{{ s.name }}</div><div class="sub">{{ s.caption }}</div>
       {% for r in s.rows %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
     </div>
@@ -125,28 +135,28 @@ body {
 
 {% elif n == 4 %}
   {% set m = post.menu %}
-  <div class="paper">
+  <div class="paper edge-both">
     <div class="shop">예시</div>
     {% for r in m.items %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
   </div>
 
 {% elif n == 5 %}
   {% set o = post.options %}
-  <div class="paper">
+  <div class="paper edge-both">
     <div class="shop">언제 알아야 해</div>
     {% for ch in o.checks %}<div class="check fit">{{ '☑' if ch.checked else '☐' }} {{ ch.text }}</div>{% endfor %}
   </div>
 
 {% elif n == 6 %}
   {% set st = post.steps %}
-  <div class="paper">
+  <div class="paper edge-both">
     <div class="shop">동작 순서</div>
     {% for s in st.steps %}<div class="step fit"><b>{{ loop.index }}</b>{{ s }}</div>{% endfor %}
   </div>
 
 {% elif n == 7 %}
   {% set sp = post.special %}
-  <div class="paper">
+  <div class="paper edge-both">
     <div class="shop">요즘 소식</div>
     {% if sp.news %}
       {% for item in sp.news %}<div class="news"><div class="t fit">{{ item.title }}</div><div class="s fit">{{ item.source }} · {{ item.summary }}</div></div>{% endfor %}
@@ -157,7 +167,7 @@ body {
 
 {% elif n == 8 %}
   {% set ca = post.caution %}
-  <div class="paper warn">
+  <div class="paper edge-both warn">
     <div class="shop">주의할 점</div>
     <div class="band">⚠ 주의</div>
     {% for r in ca.items %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
@@ -165,7 +175,7 @@ body {
 
 {% elif n == 9 %}
   {% set tt = post.total %}
-  <div class="paper">
+  <div class="paper edge-top">
     <div class="shop">요약</div>
     {% for p in tt.points %}<div class="line"><span class="label fit" style="overflow:hidden">{{ loop.index }} {{ p }}</span><i class="leader"></i><span class="value">✓</span></div>{% endfor %}
     {% if tt.next_topic %}<div class="hr"></div>
