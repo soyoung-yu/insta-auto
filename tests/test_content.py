@@ -112,7 +112,7 @@ def test_ten_slide_schema_parts():
         Step(text="요청", who="client")  # must be a / b / other
     with pytest.raises(ValidationError):
         Confusion(items=[{"wrong": "x", "right": "y"}])  # at least 2 myths
-    assert SpecialNews(title="t", source="HN", why="에이전트가 서버를 부름").why
+    assert SpecialNews(ref=0, title="t", source="HN", why="에이전트가 서버를 부름").why
     p = Post.model_validate_json(FIXTURE.read_text())
     assert p.options.situations[0] == "에러가 어디서 났는지 볼 때"
     assert p.cover.title == "클라이언트와 서버가 뭐야?"  # full term, no abbreviation

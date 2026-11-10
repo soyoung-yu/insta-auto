@@ -9,6 +9,7 @@ from hanip.claude_cli import ClaudeError
 from hanip.config import Settings
 from hanip.content import Post
 from hanip.curriculum import Topic, save_curriculum
+from hanip.factcheck import CheckResult, Issue
 from hanip.instagram import InstagramError
 from hanip.pipeline import Deps, Outcome, approve, run_daily
 from hanip.render import RenderResult
@@ -22,8 +23,11 @@ TOPICS = [Topic(id=f"t{i}", title_ko=f"주제{i}", keyword_en=f"k{i}", level=1) 
 class Fake:
     """Records calls; each attribute is a Deps-compatible callable."""
 
-    def __init__(self, overflow_times=0, ig_error=None, gen_error=None, publish_error=None, status="PUBLISHED"):
+    def __init__(self, overflow_times=0, ig_error=None, gen_error=None, publish_error=None, status="PUBLISHED",
+                 fact_fail_times=0, fact_error=None):
         self.calls = {}
+        self.fact_fail_times = fact_fail_times
+        self.fact_error = fact_error
         self.publish_error = publish_error  # raised by publish() but the post still went live
         self.status = status
         self.overflow_times = overflow_times
@@ -63,10 +67,19 @@ class Fake:
             n = len(self.calls["render_post"])
             return RenderResult(paths, [2] if n <= self.overflow_times else [])
 
-        def write_preview(paths, caption, out_dir):
+        def write_preview(paths, caption, out_dir, report=""):
+            self._rec("write_preview", report=report)
             p = out_dir / "preview.html"
             p.write_text(caption)
             return p
+
+        def fact_check(topic, post, news, **k):
+            self._rec("fact_check", topic)
+            if self.fact_error:
+                raise self.fact_error
+            if len(self.calls["fact_check"]) <= self.fact_fail_times:
+                return CheckResult(ok=False, issues=[Issue("definition.definition", "서버는 원격만이 아님", "다른 컴퓨터")])
+            return CheckResult(ok=True)
 
         def publish_images(paths, *, number, repo_dir, base_url, **k):
             self._rec("publish_images", number=number)
@@ -106,6 +119,7 @@ class Fake:
         return Deps(
             find_news=find_news,
             usage_queries=usage_queries,
+            fact_check=fact_check,
             generate_post=generate_post,
             render_post=render_post,
             write_preview=write_preview,
@@ -365,3 +379,35 @@ def test_publish_sends_every_rendered_slide_even_when_nine(settings, tmp_path):
     run_daily(settings, today=MON, deps=deps)
     urls = f.calls["prepare_carousel"][0][0][0]
     assert len(urls) == 9
+
+
+def test_fact_issue_regenerates_with_the_problem_as_feedback(settings):
+    put_state(settings)
+    f = Fake(fact_fail_times=1)
+    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.PENDING_APPROVAL
+    assert len(f.calls["generate_post"]) == 2
+    assert "서버는 원격만이 아님" in f.calls["generate_post"][1][1]["feedback"]
+    assert len(f.calls["render_post"]) == 1  # nothing is rendered until the facts pass
+
+
+def test_persistent_fact_issues_block_the_post(settings):
+    put_state(settings, published_count=5, curriculum_index=5)
+    f = Fake(fact_fail_times=99)
+    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.FAILED
+    assert len(f.calls["generate_post"]) == 3 and "render_post" not in f.calls
+    assert not f.published and f.notes
+
+
+def test_fact_checker_error_blocks_the_post(settings):
+    put_state(settings)
+    f = Fake(fact_error=ClaudeError("down"))
+    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.FAILED
+    assert state(settings).pending is None
+
+
+def test_preview_shows_fact_check_result(settings):
+    put_state(settings)
+    f = Fake(fact_fail_times=1)
+    run_daily(settings, today=MON, deps=f.deps())
+    assert "통과" in f.calls["write_preview"][0][1]["report"]
+    assert (settings.out_dir / "0001" / "factcheck.txt").read_text().startswith("사실 확인")

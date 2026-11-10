@@ -168,13 +168,14 @@ def render_post(post: Post, *, number: int, theme: str, handle: str, out_dir: Pa
     return RenderResult(paths=paths, overflow=overflow)
 
 
-def write_preview(paths: list[Path], caption: str, out_dir: Path) -> Path:
+def write_preview(paths: list[Path], caption: str, out_dir: Path, report: str = "") -> Path:
     imgs = "\n".join(f'<img src="{p.name}" alt="{p.name}">' for p in paths)
     doc = f"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>미리보기</title>
 <style>body{{font-family:-apple-system,sans-serif;background:#eee;margin:24px}}
 .grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}}img{{width:100%;display:block}}
 pre{{white-space:pre-wrap;background:#fff;padding:16px;font-size:15px}}</style></head>
-<body><div class="grid">{imgs}</div><h3>캡션</h3><pre>{html_lib.escape(caption)}</pre></body></html>"""
+<body><div class="grid">{imgs}</div><h3>캡션</h3><pre>{html_lib.escape(caption)}</pre>
+<h3>사실 확인</h3><pre>{html_lib.escape(report or "(기록 없음)")}</pre></body></html>"""
     out = out_dir / "preview.html"
     out.write_text(doc)
     return out

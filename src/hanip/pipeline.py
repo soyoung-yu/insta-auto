@@ -14,7 +14,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any, Callable
 
-from hanip import crawler, render
+from hanip import crawler, factcheck, render
 from hanip import instagram as ig
 from hanip import notify as notify_mod
 from hanip.claude_cli import ClaudeError
@@ -63,6 +63,7 @@ def _make_instagram(settings: Settings):
 class Deps:
     find_news: Callable[..., Any] = crawler.find_news
     usage_queries: Callable[..., Any] = crawler.suggest_usage_queries
+    fact_check: Callable[..., Any] = factcheck.check_post
     generate_post: Callable[..., Any] = generate_post
     render_post: Callable[..., Any] = render.render_post
     write_preview: Callable[..., Any] = render.write_preview
@@ -102,20 +103,28 @@ def _maybe_refresh_token(settings: Settings, state: State, today: date, deps: De
     return dataclasses.replace(settings, ig_access_token=token)
 
 
-def _generate_and_render(settings, topic, next_topic, number, theme, out_dir, deps) -> tuple[Post, list[Path]]:
-    # Slide 8 shows where the concept is used today: search with usage-oriented queries, give Claude 6 candidates
+def _generate_and_render(settings, topic, next_topic, number, theme, out_dir, deps) -> tuple[Post, list[Path], str]:
+    """Generate → fact check → render; a failed check or overflow feeds back into the next generation."""
+    # The usage slide shows where the concept is used today: search with usage-oriented queries
     news = deps.find_news(topic, queries=deps.usage_queries(topic), limit=NEWS_CANDIDATES)
     feedback = None
     for _ in range(MAX_GENERATIONS):
         post = deps.generate_post(topic, next_topic, news, feedback=feedback)
+        check = deps.fact_check(topic, post, news)
+        if not check.ok:
+            feedback = check.feedback()
+            log.info("fact check failed, regenerating: %s", feedback)
+            continue
         result = deps.render_post(post, number=number, theme=theme, handle=settings.account_handle, out_dir=out_dir)
         if not result.overflow:
             (out_dir / "post.json").write_text(post.model_dump_json(indent=2))
-            return post, result.paths
+            report = check.report()
+            (out_dir / "factcheck.txt").write_text(report)
+            return post, result.paths, report
         slides = ", ".join(str(n) for n in result.overflow)
         feedback = f"{slides}장 글자가 넘쳐서 잘렸어. 그 장의 문구를 더 짧게 써."
         log.info("overflow on slides %s, regenerating", slides)
-    raise ClaudeError(f"글자 넘침이 계속됨 ({feedback})")
+    raise ClaudeError(f"생성 실패가 반복됨:\n{feedback}")
 
 
 def _record(state: State, settings: Settings, *, number: int, day: str, topic_id: str, theme: str, media_id: str) -> None:
@@ -210,14 +219,14 @@ def run_daily(settings: Settings, *, today: date, deps: Deps | None = None) -> O
     theme = theme_for(number)
     out_dir = settings.out_dir / f"{number:04d}"
     try:
-        post, paths = _generate_and_render(settings, topic, next_topic, number, theme, out_dir, deps)
+        post, paths, report = _generate_and_render(settings, topic, next_topic, number, theme, out_dir, deps)
     except Exception as e:  # noqa: BLE001 - generation/render failure must not post anything
         log.exception("generation failed")
         deps.notify(APP, f"No.{number:02d} 생성 실패: {e}")
         return Outcome.FAILED
 
     if needs_approval(number):
-        preview = deps.write_preview(paths, full_caption(post), out_dir)
+        preview = deps.write_preview(paths, full_caption(post), out_dir, report=report)
         state.pending = Pending(day, topic.id, number, theme, str(out_dir))
         save_state(state, settings.state_path)
         deps.open_file(preview)

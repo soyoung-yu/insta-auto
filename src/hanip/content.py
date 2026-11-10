@@ -104,6 +104,7 @@ class Steps(BaseModel):
 
 
 class SpecialNews(BaseModel):
+    ref: Annotated[int, Field(ge=0)]  # index into the crawled news list given in the prompt
     title: Str24
     source: Str12
     why: Str28  # how this item uses today's concept
@@ -148,7 +149,7 @@ class Post(BaseModel):
 def build_prompt(topic: Topic, next_topic: Topic | None, news: list[Any], feedback: str | None) -> str:
     template = files("hanip.prompts").joinpath("post.md").read_text()
     news_json = json.dumps(
-        [{"title": n.title, "source": n.source, "url": n.url, "snippet": n.summary} for n in news],
+        [{"ref": i, "title": n.title, "source": n.source, "url": n.url, "snippet": n.summary} for i, n in enumerate(news)],
         ensure_ascii=False,
         indent=1,
     )
