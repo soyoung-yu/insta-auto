@@ -142,6 +142,22 @@ def build_prompt(topic: Topic, next_topic: Topic | None, news: list[Any], feedba
     )
 
 
+MAX_ATTEMPTS = 3  # first try + 2 retries with specific feedback
+
+
+def _describe(e: ValidationError) -> str:
+    lines = []
+    for err in e.errors():
+        loc = ".".join(str(x) for x in err["loc"])
+        value = err.get("input")
+        limit = (err.get("ctx") or {}).get("max_length")
+        if err["type"] == "string_too_long" and isinstance(value, str):
+            lines.append(f"- {loc}: '{value}' 는 {len(value)}자. 최대 {limit}자 → 더 짧은 말로 바꿔")
+        else:
+            lines.append(f"- {loc}: {err['msg']}")
+    return "이전 답의 형식 오류(꼭 고칠 것, 글자 수는 공백 포함):\n" + "\n".join(lines)
+
+
 def generate_post(
     topic: Topic,
     next_topic: Topic | None,
@@ -150,15 +166,13 @@ def generate_post(
     feedback: str | None = None,
     run=run_claude_json,
 ) -> Post:
-    try:
-        return Post.model_validate(run(build_prompt(topic, next_topic, news, feedback)))
-    except ClaudeError as e:
-        problem = f"이전 답을 JSON으로 읽을 수 없었어. 설명 없이 JSON 객체 하나만 출력해. ({e})"
-    except ValidationError as e:
-        problem = f"이전 답의 형식 오류(꼭 고칠 것):\n{e}"
-    retry_feedback = "\n".join(filter(None, [feedback, problem]))
-    raw = run(build_prompt(topic, next_topic, news, retry_feedback))
-    try:
-        return Post.model_validate(raw)
-    except ValidationError as e:
-        raise ClaudeError(f"문구 형식 오류가 반복됨: {e}") from e
+    problem = None
+    for _ in range(MAX_ATTEMPTS):
+        prompt_feedback = "\n".join(filter(None, [feedback, problem])) or None
+        try:
+            return Post.model_validate(run(build_prompt(topic, next_topic, news, prompt_feedback)))
+        except ClaudeError as e:
+            problem = f"이전 답을 JSON으로 읽을 수 없었어. 설명 없이 JSON 객체 하나만 출력해. ({e})"
+        except ValidationError as e:
+            problem = _describe(e)
+    raise ClaudeError(f"문구 형식 오류가 반복됨:\n{problem}")

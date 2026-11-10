@@ -51,7 +51,7 @@ def test_generate_post_retries_once_on_validation_error():
     assert len(calls) == 2 and "cover" in calls[1]
 
 
-def test_generate_post_gives_up_after_second_invalid():
+def test_generate_post_gives_up_after_three_invalid():
     bad = {**good(), "cover": {"title": "가" * 30, "subtitle": "x"}}
     with pytest.raises(ClaudeError):
         generate_post(TOPIC, None, [], run=lambda p: bad)
@@ -89,3 +89,18 @@ def test_schema_has_no_summary_or_total_fields():
     for model in (Definition, Menu, Options, Steps, Caution):
         assert "summary" not in model.model_fields, model.__name__
     assert "total" not in SetReceipt.model_fields
+
+
+def test_retry_feedback_names_field_length_and_limit_and_allows_two_retries():
+    long_row = {"label": "서버", "value": "요청을 받아 처리하는 컴퓨터"}  # 15 chars, limit 14
+    bad = good()
+    bad["definition"]["rows"][1] = long_row
+    calls = []
+
+    def run(p):
+        calls.append(p)
+        return bad if len(calls) < 3 else good()
+
+    generate_post(TOPIC, None, [], run=run)
+    assert len(calls) == 3
+    assert "definition.rows.1.value" in calls[1] and "15자" in calls[1] and "14자" in calls[1]
