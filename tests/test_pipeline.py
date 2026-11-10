@@ -316,3 +316,14 @@ def test_expired_inflight_is_dropped_and_same_topic_regenerated(settings):
     assert run_daily(settings, today=tue, deps=f.deps()) == Outcome.PUBLISHED
     s = state(settings)
     assert s.history[0].topic_id == "t5" and s.inflight is None
+
+
+def test_caption_ends_with_discussion_invite_right_above_hashtags():
+    from hanip.pipeline import DISCUSSION_INVITE, full_caption
+
+    post = Post.model_validate_json(FIXTURE.read_text())
+    cap = full_caption(post)
+    body, invite, tags = cap.split("\n\n")[-3:]
+    assert invite == DISCUSSION_INVITE
+    assert tags == " ".join(post.hashtags)
+    assert "댓글" in invite and "같이" in invite

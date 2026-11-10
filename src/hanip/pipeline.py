@@ -71,8 +71,11 @@ class Deps:
     open_file: Callable[[Path], None] = notify_mod.open_file
 
 
+DISCUSSION_INVITE = "다르게 알고 있거나 더 쉬운 설명이 있다면 댓글로 나눠 줘 💬 같이 이야기하면서 한입씩 더 배워 가자!"
+
+
 def full_caption(post: Post) -> str:
-    return f"{post.caption}\n\n{' '.join(post.hashtags)}"
+    return f"{post.caption}\n\n{DISCUSSION_INVITE}\n\n{' '.join(post.hashtags)}"
 
 
 def _maybe_refresh_token(settings: Settings, state: State, today: date, deps: Deps) -> Settings:
