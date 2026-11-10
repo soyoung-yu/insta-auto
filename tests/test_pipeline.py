@@ -411,3 +411,12 @@ def test_preview_shows_fact_check_result(settings):
     run_daily(settings, today=MON, deps=f.deps())
     assert "통과" in f.calls["write_preview"][0][1]["report"]
     assert (settings.out_dir / "0001" / "factcheck.txt").read_text().startswith("사실 확인")
+
+
+def test_preview_report_lists_what_the_fact_check_made_us_fix(settings):
+    put_state(settings)
+    f = Fake(fact_fail_times=1)
+    run_daily(settings, today=MON, deps=f.deps())
+    report = f.calls["write_preview"][0][1]["report"]
+    assert report.startswith("사실 확인: 통과")
+    assert "고친 점" in report and "서버는 원격만이 아님" in report

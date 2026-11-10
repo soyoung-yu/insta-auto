@@ -108,17 +108,21 @@ def _generate_and_render(settings, topic, next_topic, number, theme, out_dir, de
     # The usage slide shows where the concept is used today: search with usage-oriented queries
     news = deps.find_news(topic, queries=deps.usage_queries(topic), limit=NEWS_CANDIDATES)
     feedback = None
+    fixed: list[str] = []  # fact-check findings that earlier attempts were regenerated for
     for _ in range(MAX_GENERATIONS):
         post = deps.generate_post(topic, next_topic, news, feedback=feedback)
         check = deps.fact_check(topic, post, news)
         if not check.ok:
             feedback = check.feedback()
+            fixed += [f"- {i.field}: {i.problem}" for i in check.issues]
             log.info("fact check failed, regenerating: %s", feedback)
             continue
         result = deps.render_post(post, number=number, theme=theme, handle=settings.account_handle, out_dir=out_dir)
         if not result.overflow:
             (out_dir / "post.json").write_text(post.model_dump_json(indent=2))
             report = check.report()
+            if fixed:
+                report += "\n\n이전 시도에서 지적받아 고친 점:\n" + "\n".join(fixed)
             (out_dir / "factcheck.txt").write_text(report)
             return post, result.paths, report
         slides = ", ".join(str(n) for n in result.overflow)
