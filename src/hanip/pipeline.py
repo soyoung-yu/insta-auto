@@ -131,7 +131,7 @@ def _record(state: State, settings: Settings, *, number: int, day: str, topic_id
 def _publish(settings: Settings, state: State, *, number: int, topic_id: str, theme: str, out_dir: Path, today: date, deps: Deps) -> Outcome:
     try:
         post = Post.model_validate_json((out_dir / "post.json").read_text())
-        paths = [out_dir / f"slide-{i:02d}.jpg" for i in range(1, render.SLIDES + 1)]
+        paths = sorted(out_dir.glob("slide-*.jpg"))
         urls = deps.publish_images(paths, number=number, repo_dir=settings.repo_dir, base_url=settings.image_base_url)
         client = deps.make_instagram(settings)
         container = client.prepare_carousel(urls, full_caption(post))

@@ -28,9 +28,8 @@ def test_row_value_too_long_rejected():
         Row(label="단위", value="가" * 15)
 
 
-def test_special_requires_fallback_when_no_news():
-    with pytest.raises(ValidationError):
-        Special(news=[], fallback=None)
+def test_special_may_be_empty_then_the_slide_is_dropped():
+    assert Special(news=[]).news == []
 
 
 def test_hashtag_count_bounds():

@@ -175,10 +175,25 @@ def test_overflow_detected(post, tmp_path):
     assert 2 in render_post(long, number=1, theme="light", handle="h", out_dir=tmp_path).overflow
 
 
+def test_usage_slide_is_dropped_when_no_news(post):
+    p = post.model_copy(deep=True)
+    p.special.news = []
+    pages = bodies(p)
+    assert len(pages) == 9
+    assert not any("요즘 어디에 쓰여?" in pg for pg in pages)
+    assert "9 / 9" in pages[8] and "오늘의 한입" in pages[8] and "8 / 9" in pages[7]
+
+
+def test_render_without_usage_slide_outputs_nine_files(post, tmp_path):
+    p = post.model_copy(deep=True)
+    p.special.news = []
+    r = render_post(p, number=1, theme="light", handle="h", out_dir=tmp_path)
+    assert [x.name for x in r.paths] == [f"slide-{i:02d}.jpg" for i in range(1, 10)]
+
+
 def test_short_slide_gets_filler(post, tmp_path, monkeypatch):
     short = post.model_copy(deep=True)
-    short.special.news = []
-    short.special.fallback = "요즘 에이전트가 많아져서 중요해"
+    short.special.news = short.special.news[:1]
     seen = {}
     real = render.build_html
 

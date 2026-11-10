@@ -10,7 +10,7 @@ import json
 from importlib.resources import files
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, Field, ValidationError, model_validator
+from pydantic import BaseModel, Field, ValidationError
 
 from hanip.claude_cli import ClaudeError, run_claude_json
 from hanip.curriculum import Topic
@@ -110,14 +110,9 @@ class SpecialNews(BaseModel):
 
 
 class Special(BaseModel):
-    news: Annotated[list[SpecialNews], Field(max_length=3)]
-    fallback: Annotated[str, Field(max_length=40)] | None = None
+    """Real-world uses found in the news. Empty → the '요즘 어디에 쓰여?' slide is left out."""
 
-    @model_validator(mode="after")
-    def _need_fallback(self):
-        if not self.news and not self.fallback:
-            raise ValueError("news가 비어 있으면 fallback이 필요함")
-        return self
+    news: Annotated[list[SpecialNews], Field(max_length=3)]
 
 
 class Warn(BaseModel):
@@ -162,7 +157,7 @@ def build_prompt(topic: Topic, next_topic: Topic | None, news: list[Any], feedba
         .replace("{topic_title}", topic.title_ko)
         .replace("{topic_keyword}", topic.keyword_en)
         .replace("{next_topic}", next_topic.title_ko if next_topic else "없음 (null로 둘 것)")
-        .replace("{news}", news_json if news else "[] (관련 소식 없음 → news는 빈 배열, fallback 작성)")
+        .replace("{news}", news_json if news else "[] (관련 소식 없음 → special.news는 빈 배열, 이 장은 빠짐)")
         .replace("{feedback}", feedback or "없음")
     )
 

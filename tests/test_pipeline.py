@@ -348,3 +348,20 @@ def test_news_is_searched_with_usage_queries(settings):
     run_daily(settings, today=MON, deps=f.deps())
     assert f.calls["find_news"][0][1]["queries"] == ["usage q1", "usage q2"]
     assert f.calls["find_news"][0][1]["limit"] == 6
+
+
+def test_publish_sends_every_rendered_slide_even_when_nine(settings, tmp_path):
+    put_state(settings, published_count=5, curriculum_index=5)
+    f = Fake()
+    deps = f.deps()
+    real_render = deps.render_post
+
+    def render_nine(post, *, number, theme, handle, out_dir):
+        r = real_render(post, number=number, theme=theme, handle=handle, out_dir=out_dir)
+        (out_dir / "slide-10.jpg").unlink()
+        return RenderResult(r.paths[:9], r.overflow)
+
+    deps.render_post = render_nine
+    run_daily(settings, today=MON, deps=deps)
+    urls = f.calls["prepare_carousel"][0][0][0]
+    assert len(urls) == 9

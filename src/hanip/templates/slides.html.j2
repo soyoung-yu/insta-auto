@@ -103,7 +103,6 @@ table.cmp { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .news .s { font: 700 28px "D2Coding", monospace; color: {{ c.muted }}; margin-top: 8px; }
 .news .y { font: 500 34px/1.4 "Pretendard", sans-serif; margin-top: 10px; max-height: 96px; overflow: hidden; }
 .news .y::before { content: "→ "; color: {{ c.accent }}; font-weight: 800; }
-.fallback { font: 600 46px/1.5 "Pretendard", sans-serif; max-height: 280px; overflow: hidden; }
 
 .warn { display: flex; gap: 28px; align-items: flex-start; margin-bottom: 36px; }
 .warn .ic { flex: 0 0 66px; height: 66px; border-radius: 50%; background: #ffd166; color: #1b1430; text-align: center; font: 900 38px/66px "Pretendard", sans-serif; }
@@ -134,7 +133,7 @@ table.cmp { width: 100%; border-collapse: collapse; table-layout: fixed; }
 </head>
 <body>
 <div class="tag">{{ tag }}</div>
-{% if n > 1 %}<div class="pg">{{ n }} / {{ total_slides }}</div>{% endif %}
+{% if n > 1 %}<div class="pg">{{ pos }} / {{ total_slides }}</div>{% endif %}
 
 {% macro head(title) %}<div class="head"><h2 class="hl">{{ title }}</h2></div>{% endmacro %}
 
@@ -220,11 +219,7 @@ table.cmp { width: 100%; border-collapse: collapse; table-layout: fixed; }
   {% set sp = post.special %}
   <div class="paper edge-both">
     {{ head("요즘 어디에 쓰여?") }}
-    {% if sp.news %}
-      {% for item in sp.news %}<div class="news"><div class="t fit">{{ item.title }}</div><div class="s">{{ item.source }}</div><div class="y fit">{{ item.why }}</div></div>{% endfor %}
-    {% else %}
-      <div class="fallback fit">{{ concepts(sp.fallback) }}</div>
-    {% endif %}
+    {% for item in sp.news %}<div class="news"><div class="t fit">{{ item.title }}</div><div class="s">{{ item.source }}</div><div class="y fit">{{ item.why }}</div></div>{% endfor %}
   </div>
 
 {% elif n == 9 %}

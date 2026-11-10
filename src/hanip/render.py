@@ -110,13 +110,22 @@ def build_html(
     )
     a, b = post.compare.a.name, post.compare.b.name
     common["concepts"] = lambda text: concept_markup(text, a, b)
-    common["total_slides"] = SLIDES
+    kinds = slide_kinds(post)
+    common["total_slides"] = len(kinds)
     pages = []
-    for n in range(1, SLIDES + 1):
+    for pos, n in enumerate(kinds, start=1):
         pose = pose_svg(filler[n], theme) if n in filler else None
         align = "top" if (pose or not center) else "center"
-        pages.append(tpl.render(n=n, pose=pose, align=align, **common))
+        pages.append(tpl.render(n=n, pos=pos, pose=pose, align=align, **common))
     return pages
+
+
+USAGE_SLIDE = 8
+
+
+def slide_kinds(post: Post) -> list[int]:
+    """Template slide kinds in order; the usage-news slide only appears when news was found."""
+    return [n for n in range(1, SLIDES + 1) if n != USAGE_SLIDE or post.special.news]
 
 
 def measure(page: Page) -> dict:
@@ -138,12 +147,13 @@ def render_post(post: Post, *, number: int, theme: str, handle: str, out_dir: Pa
         browser = p.chromium.launch(channel=CHROME_CHANNEL)
         try:
             page = browser.new_page(viewport={"width": WIDTH, "height": HEIGHT}, device_scale_factor=1)
+            kinds = slide_kinds(post)
             first = build_html(post, number=number, theme=theme, handle=handle, center=False)
             filler = {}
-            for n, html in enumerate(first, start=1):
-                _load(page, html, html_dir / f"slide-{n:02d}.html")
-                if 2 <= n <= SLIDES - 1 and measure(page)["content_bottom"] < HALF:
-                    filler[n] = POSES[(number + n) % len(POSES)]
+            for pos, (kind, html) in enumerate(zip(kinds, first), start=1):
+                _load(page, html, html_dir / f"slide-{pos:02d}.html")
+                if 2 <= kind <= SLIDES - 1 and measure(page)["content_bottom"] < HALF:
+                    filler[kind] = POSES[(number + pos) % len(POSES)]
             final = build_html(post, number=number, theme=theme, handle=handle, filler=filler)
             paths, overflow = [], []
             for n, html in enumerate(final, start=1):
