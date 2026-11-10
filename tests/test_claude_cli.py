@@ -47,3 +47,14 @@ def test_is_error_raises():
 def test_nonzero_exit_raises():
     with pytest.raises(ClaudeError):
         run_claude_json("x", runner=fake_runner("", code=1))
+
+
+def test_stdin_is_closed_so_claude_does_not_wait_for_input():
+    seen = {}
+
+    def run(args, **kwargs):
+        seen.update(kwargs)
+        return subprocess.CompletedProcess(args, 0, stdout=json.dumps({"result": "{}"}), stderr="")
+
+    run_claude_json("x", runner=run)
+    assert seen["stdin"] is subprocess.DEVNULL

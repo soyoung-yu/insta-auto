@@ -20,7 +20,7 @@ class ClaudeError(Exception):
 def run_claude_json(prompt: str, *, runner=subprocess.run, timeout: int = 600) -> Any:
     args = ["claude", "-p", prompt, "--output-format", "json"]
     try:
-        proc = runner(args, capture_output=True, text=True, timeout=timeout)
+        proc = runner(args, capture_output=True, text=True, timeout=timeout, stdin=subprocess.DEVNULL)
     except (OSError, subprocess.TimeoutExpired) as e:
         raise ClaudeError(f"claude 실행 실패: {e}") from e
     if proc.returncode != 0:
