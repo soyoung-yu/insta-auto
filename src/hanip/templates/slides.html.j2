@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: "Pretendard"; font-weight: 400; src: url("{{ fonts }}/Pretendard-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Pretendard"; font-weight: 700; src: url("{{ fonts }}/Pretendard-Bold.woff2") format("woff2"); }
+@font-face { font-family: "Pretendard"; font-weight: 800; src: url("{{ fonts }}/Pretendard-ExtraBold.woff2") format("woff2"); }
+@font-face { font-family: "Pretendard"; font-weight: 900; src: url("{{ fonts }}/Pretendard-Black.woff2") format("woff2"); }
+@font-face { font-family: "D2Coding"; font-weight: 400; src: url("{{ fonts }}/D2Coding.ttf") format("truetype"); }
+@font-face { font-family: "D2Coding"; font-weight: 700; src: url("{{ fonts }}/D2Coding-Bold.ttf") format("truetype"); }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; overflow: hidden; }
+body {
+  position: relative;
+  background: {{ c.bg }};
+  background-image: radial-gradient({{ c.dots }} 1px, transparent 1px);
+  background-size: 16px 16px;
+  color: {{ c.text }};
+  font-family: "Pretendard", sans-serif;
+}
+.tag { position: absolute; left: 72px; top: 56px; font: 700 40px "D2Coding", monospace; color: {{ c.accent }}; letter-spacing: 2px; }
+.pg { position: absolute; right: 72px; top: 60px; font: 700 34px "D2Coding", monospace; color: {{ c.muted }}; }
+.foot { position: absolute; left: 72px; right: 72px; bottom: 56px; display: flex; justify-content: space-between; font: 700 34px "D2Coding", monospace; }
+.foot .handle { color: {{ c.muted }}; }
+.foot .swipe { color: {{ c.accent }}; }
+
+.content { position: absolute; left: 90px; right: 90px; top: 150px; bottom: 70px; display: flex; flex-direction: column; }
+.content.center { justify-content: center; }
+.content.top { justify-content: flex-start; }
+.content > * { flex: 0 0 auto; }
+
+.paper {
+  background: {{ c.paper }};
+  color: {{ c.text }};
+  box-shadow: inset 0 0 0 4px {{ c.edge }};
+  padding: 56px 56px 80px;
+  font-family: "D2Coding", monospace;
+  -webkit-mask: radial-gradient(circle 16px at 50% 100%, transparent 98%, #000) 0 0 / 40px 100%;
+}
+.paper.warn { box-shadow: inset 0 0 0 6px {{ c.warn_border }}; }
+.shop { text-align: center; font-weight: 700; font-size: 54px; letter-spacing: 4px; }
+.sub { text-align: center; font-size: 34px; color: {{ c.muted }}; margin: 10px 0 30px; }
+.hr { border-top: 4px dashed {{ c.text }}; opacity: .3; margin: 26px 0; }
+.line { display: flex; align-items: baseline; font-size: 42px; line-height: 1.9; }
+.line .label { flex: 0 0 auto; white-space: nowrap; }
+.line .leader { flex: 1 1 24px; min-width: 24px; border-bottom: 4px dotted {{ c.text }}; opacity: .3; margin: 0 14px; transform: translateY(-10px); }
+.line .value { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; }
+.def { font: 800 62px/1.3 "Pretendard", sans-serif; color: {{ c.accent }}; max-height: 164px; overflow: hidden; word-break: keep-all; }
+.total { display: flex; justify-content: space-between; gap: 20px; font-size: 44px; font-weight: 700; }
+.total .v { white-space: nowrap; overflow: hidden; min-width: 0; }
+.check { font-size: 44px; line-height: 1.9; white-space: nowrap; overflow: hidden; }
+.step { font-size: 44px; line-height: 1.85; white-space: nowrap; overflow: hidden; }
+.step b { color: {{ c.accent }}; margin-right: 22px; }
+.news { margin: 18px 0 26px; }
+.news .t { font: 700 44px/1.3 "Pretendard", sans-serif; max-height: 116px; overflow: hidden; word-break: keep-all; }
+.news .s { font-size: 32px; line-height: 1.4; color: {{ c.muted }}; margin-top: 8px; max-height: 92px; overflow: hidden; }
+.fallback { font: 600 46px/1.5 "Pretendard", sans-serif; max-height: 280px; overflow: hidden; word-break: keep-all; }
+.band { background: #ffd166; color: #1b1430; font-weight: 700; font-size: 38px; text-align: center; padding: 10px; margin: 8px 0 22px; }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.two .paper { padding: 44px 32px 70px; }
+.two .shop { font-size: 46px; }
+.two .line { font-size: 38px; }
+.two .total { font-size: 40px; }
+.conclusion { margin-top: 44px; text-align: center; font: 800 54px "Pretendard", sans-serif; white-space: nowrap; overflow: hidden; }
+
+.cover-wrap { position: absolute; left: 130px; top: 190px; width: 820px; }
+.char-cover { width: 820px; display: block; }
+.mouth { position: absolute; left: 128px; top: 307px; width: 564px; height: 577px; padding: 48px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: hidden; }
+.mouth .title { font: 900 78px/1.2 "Pretendard", sans-serif; color: #fff; word-break: keep-all; max-height: 290px; overflow: hidden; }
+.mouth .subtitle { font: 600 40px/1.35 "Pretendard", sans-serif; color: #ffadc9; margin-top: 26px; word-break: keep-all; max-height: 110px; overflow: hidden; }
+
+.signoff { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 46px; gap: 24px; }
+.signoff .big { font: 900 50px "Pretendard", sans-serif; white-space: nowrap; }
+.signoff .big .heart { color: #ff5d8f; }
+.signoff .small { font: 400 34px "Pretendard", sans-serif; color: {{ c.muted }}; margin-top: 12px; }
+.signoff .handle { font: 700 36px "D2Coding", monospace; color: {{ c.accent }}; margin-top: 18px; }
+.char-ending { width: 330px; flex: 0 0 auto; display: block; }
+
+.filler { position: absolute; left: 50%; bottom: 80px; width: 560px; transform: translateX(-50%); }
+.char-pose { width: 100%; display: block; }
+</style>
+</head>
+<body>
+<div class="tag">{{ tag }}</div>
+{% if n > 1 %}<div class="pg">{{ n }} / 9</div>{% endif %}
+
+{% if n == 1 %}
+  <div class="cover-wrap">
+    {{ cover_svg }}
+    <div class="mouth fit">
+      <div class="title fit">{{ post.cover.title }}</div>
+      <div class="subtitle fit">{{ post.cover.subtitle }}</div>
+    </div>
+  </div>
+  <div class="foot"><span class="handle">{{ handle }}</span><span class="swipe">SWIPE &gt;</span></div>
+
+{% else %}
+<div class="content {{ align }}">
+
+{% if n == 2 %}
+  {% set d = post.definition %}
+  <div class="paper">
+    <div class="shop">TODAY'S BITE</div><div class="sub">메인 메뉴 · 정의</div>
+    <div class="def fit">{{ d.definition }}</div>
+    <div class="hr"></div>
+    {% for r in d.rows %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
+    <div class="hr"></div>
+    <div class="total"><span>한입 요약</span><span class="v fit">{{ d.summary }}</span></div>
+  </div>
+
+{% elif n == 3 %}
+  {% set cp = post.compare %}
+  <div class="two">
+  {% for s in [cp.a, cp.b] %}
+    <div class="paper">
+      <div class="shop fit" style="white-space:nowrap;overflow:hidden">{{ s.name }}</div><div class="sub">{{ s.caption }}</div>
+      {% for r in s.rows %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
+      <div class="hr"></div>
+      <div class="total"><span>합계</span><span class="v fit">{{ s.total }}</span></div>
+    </div>
+  {% endfor %}
+  </div>
+  <div class="conclusion fit">{{ cp.conclusion }}</div>
+
+{% elif n == 4 %}
+  {% set m = post.menu %}
+  <div class="paper">
+    <div class="shop">MENU</div><div class="sub">메뉴판 · 대표 사례</div>
+    {% for r in m.items %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
+    <div class="hr"></div>
+    <div class="total"><span>한입 요약</span><span class="v fit">{{ m.summary }}</span></div>
+  </div>
+
+{% elif n == 5 %}
+  {% set o = post.options %}
+  <div class="paper">
+    <div class="shop">ORDER OPTION</div><div class="sub">이럴 때 챙겨 봐</div>
+    {% for ch in o.checks %}<div class="check fit">{{ '☑' if ch.checked else '☐' }} {{ ch.text }}</div>{% endfor %}
+    <div class="hr"></div>
+    <div class="total"><span>한입 요약</span><span class="v fit">{{ o.summary }}</span></div>
+  </div>
+
+{% elif n == 6 %}
+  {% set st = post.steps %}
+  <div class="paper">
+    <div class="shop">KITCHEN ORDER</div><div class="sub">주방 주문표 · 처리 과정</div>
+    {% for s in st.steps %}<div class="step fit"><b>{{ loop.index }}</b>{{ s }}</div>{% endfor %}
+    <div class="hr"></div>
+    <div class="total"><span>한입 요약</span><span class="v fit">{{ st.summary }}</span></div>
+  </div>
+
+{% elif n == 7 %}
+  {% set sp = post.special %}
+  <div class="paper">
+    <div class="shop">TODAY'S SPECIAL</div><div class="sub">오늘의 특선 · 요즘 화제</div>
+    {% if sp.news %}
+      {% for item in sp.news %}<div class="news"><div class="t fit">{{ item.title }}</div><div class="s fit">{{ item.source }} · {{ item.summary }}</div></div>{% endfor %}
+    {% else %}
+      <div class="fallback fit">{{ sp.fallback }}</div>
+    {% endif %}
+  </div>
+
+{% elif n == 8 %}
+  {% set ca = post.caution %}
+  <div class="paper warn">
+    <div class="shop">CAUTION</div>
+    <div class="band">⚠ 알레르기 정보</div>
+    {% for r in ca.items %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
+    <div class="hr"></div>
+    <div class="total"><span>한입 요약</span><span class="v fit">{{ ca.summary }}</span></div>
+  </div>
+
+{% elif n == 9 %}
+  {% set tt = post.total %}
+  <div class="paper">
+    <div class="shop">TOTAL</div><div class="sub">오늘 먹은 것</div>
+    {% for p in tt.points %}<div class="line"><span class="label fit" style="overflow:hidden">{{ loop.index }} {{ p }}</span><i class="leader"></i><span class="value">✓</span></div>{% endfor %}
+    {% if tt.next_topic %}<div class="hr"></div>
+    <div class="total"><span>NEXT</span><span class="v fit">{{ tt.next_topic }}</span></div>{% endif %}
+  </div>
+  <div class="signoff">
+    <div>
+      <div class="big">오늘의 한입 소화 완료 <span class="heart">♥</span></div>
+      <div class="small">필요할 때 다시 먹으러 와</div>
+      <div class="handle">{{ handle }}</div>
+    </div>
+    {{ ending_svg }}
+  </div>
+{% endif %}
+
+</div>
+{% if pose %}<div class="filler">{{ pose }}</div>{% endif %}
+{% endif %}
+</body>
+</html>
