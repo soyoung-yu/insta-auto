@@ -1,0 +1,164 @@
+<h2>다크 버전: 흰 캐릭터 + 파란 별</h2>
+<p class="subtitle">장마다 하는 역할과 순서는 예시와 같습니다. 바뀌는 건 겉모습뿐이고, 각 장의 역할을 영수증 속 이름으로 바꿔 붙였습니다(다크 버전: 보랏빛 먹색 배경 + 은은한 도트 격자, 어두운 영수증 종이. 8장 경고는 노란 배경으로 반전).</p>
+
+<style>
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+  .cell .cap { font-size:11px; margin-top:6px; line-height:1.4; }
+  .cell .cap b { color:#e8336f; }
+  .f { aspect-ratio:4/5; border-radius:6px; position:relative; overflow:hidden; box-sizing:border-box; background:#16121e; background-image:radial-gradient(#1d1827 1px, transparent 1px); background-size:16px 16px;
+       padding:16px 18px; display:flex; justify-content:center; align-items:flex-start;
+       font-family:-apple-system,"Apple SD Gothic Neo","Pretendard",sans-serif; color:#f3eefc; }
+  .pg { position:absolute; right:10px; top:6px; font-size:8px; font-weight:800; opacity:.6; }
+  .paper { width:100%; background:#2a2238; color:#f3eefc; box-shadow: inset 0 0 0 1.5px #3a3050; padding:11px 11px 14px; box-sizing:border-box; font-family:"SF Mono",Menlo,monospace;
+           -webkit-mask: radial-gradient(circle 4px at 50% 100%, transparent 98%, #000) 0 0/10px 100%; }
+  .shop { text-align:center; font-size:9px; font-weight:800; letter-spacing:1px; }
+  .sub { text-align:center; font-size:7.5px; opacity:.6; margin:2px 0 7px; }
+  .hr { border-top:1.2px dashed #f3eefc; opacity:.3; margin:6px 0; }
+  .line { display:flex; font-size:8px; line-height:1.85; }
+  .line span:first-child { white-space:nowrap; }
+  .line i { flex:1; border-bottom:1.2px dotted #f3eefc; opacity:.3; margin:0 3px 5px; }
+  .def { font-family:-apple-system,"Apple SD Gothic Neo",sans-serif; font-size:10.5px; font-weight:800; line-height:1.35; color:#ff8fb3; }
+  .total { display:flex; justify-content:space-between; font-size:8.5px; font-weight:900; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  .two .paper { padding:9px 8px 12px; }
+  .warn { background:#ffd166; color:#1b1430; font-size:8px; font-weight:900; text-align:center; padding:3px; margin:4px 0 6px; }
+  .step { font-size:8px; line-height:1.8; }
+  .step b { color:#ff8fb3; margin-right:4px; }
+  .chk { font-size:8px; line-height:1.9; }
+  .news { font-size:8px; line-height:1.35; margin:5px 0; }
+  .news b { display:block; font-size:8.5px; }
+</style>
+
+<div class="grid">
+
+  <div class="cell">
+    <div class="f" style="align-items:center;">
+      <svg viewBox="40 30 320 410" style="width:82%">
+        <rect x="130" y="398" width="40" height="34" fill="#d6d0e4" stroke="#1b1430" stroke-width="6"/>
+        <rect x="230" y="398" width="40" height="34" fill="#d6d0e4" stroke="#1b1430" stroke-width="6"/>
+        <rect x="70" y="90" width="260" height="315" rx="14" fill="#f7f5fb" stroke="#1b1430" stroke-width="7"/>
+        <line x1="200" y1="90" x2="200" y2="60" stroke="#f7f5fb" stroke-width="6"/>
+        <polygon points="200,36 203.8,46.7 214.3,47.4 206.2,54 208.8,64.1 200,58.5 191.2,64.1 193.8,54 185.7,47.4 196.2,46.7" fill="#5b9dff" stroke="#0b0f20" stroke-width="4" stroke-linejoin="round"/>
+        <rect x="140" y="112" width="18" height="24" fill="#1b1430"/>
+        <rect x="242" y="112" width="18" height="24" fill="#1b1430"/>
+        <rect x="90" y="150" width="220" height="225" rx="10" fill="#1b1430"/>
+        <rect x="112" y="150" width="20" height="18" fill="#fff"/>
+        <rect x="268" y="150" width="20" height="18" fill="#fff"/>
+        <text x="200" y="255" fill="#fff" font-size="30" font-weight="900" text-anchor="middle" font-family="-apple-system,sans-serif">토큰이 뭐야?</text>
+        <text x="200" y="292" fill="#ffadc9" font-size="16" text-anchor="middle" font-family="-apple-system,sans-serif">AI가 글을 읽는 단위</text>
+      </svg>
+    </div>
+    <div class="cap">1장 표지 → <b>그대로</b><br>캐릭터가 입 벌리고 대기</div>
+  </div>
+
+  <div class="cell">
+    <div class="f"><span class="pg">2/9</span><div class="paper">
+      <div class="shop">TODAY'S BITE</div><div class="sub">No.01 · 정의</div>
+      <div class="def">토큰 = AI가 글을<br>잘게 쪼갠 조각</div><div class="hr"></div>
+      <div class="line"><span>단위</span><i></i><span>단어보다 작게</span></div>
+      <div class="line"><span>읽는 방식</span><i></i><span>토큰 단위</span></div>
+      <div class="line"><span>요금 기준</span><i></i><span>토큰 수</span></div>
+      <div class="hr"></div><div class="total"><span>한입 요약</span><span>글자 수≠토큰 수</span></div>
+    </div></div>
+    <div class="cap">2장 WHAT(정의) → <b>메인 메뉴</b></div>
+  </div>
+
+  <div class="cell">
+    <div class="f"><span class="pg">3/9</span><div style="width:100%">
+      <div class="two">
+        <div class="paper"><div class="shop">A 세트</div><div class="sub">영어</div>
+          <div class="line"><span>hello</span><i></i><span>1</span></div>
+          <div class="line"><span>world</span><i></i><span>1</span></div>
+          <div class="hr"></div><div class="total"><span>합계</span><span>2</span></div></div>
+        <div class="paper"><div class="shop">B 세트</div><div class="sub">한글</div>
+          <div class="line"><span>안녕</span><i></i><span>2</span></div>
+          <div class="line"><span>세상</span><i></i><span>2</span></div>
+          <div class="hr"></div><div class="total"><span>합계</span><span>4</span></div></div>
+      </div>
+      <div style="font-size:9px;font-weight:800;text-align:center;margin-top:8px">같은 뜻, 다른 토큰 수</div>
+    </div></div>
+    <div class="cap">3장 VS(비교) → <b>A 세트 vs B 세트</b><br>영수증 두 장을 나란히</div>
+  </div>
+
+  <div class="cell">
+    <div class="f"><span class="pg">4/9</span><div class="paper">
+      <div class="shop">MENU</div><div class="sub">대표 사례</div>
+      <div class="line"><span>GPT</span><i></i><span>BPE 방식</span></div>
+      <div class="line"><span>Claude</span><i></i><span>자체 토크나이저</span></div>
+      <div class="line"><span>Gemini</span><i></i><span>SentencePiece</span></div>
+      <div class="line"><span>Llama</span><i></i><span>BPE 방식</span></div>
+      <div class="hr"></div><div class="total"><span>한입 요약</span><span>모델마다 다르게 셈</span></div>
+    </div></div>
+    <div class="cap">4장 TOOLS(대표 예) → <b>메뉴판</b></div>
+  </div>
+
+  <div class="cell">
+    <div class="f"><span class="pg">5/9</span><div class="paper">
+      <div class="shop">ORDER OPTION</div><div class="sub">이럴 때 챙겨 봐</div>
+      <div class="chk">☑ 글이 길 때<br>☑ 한글 비중이 클 때<br>☑ 대화가 길어질 때<br>☐ 짧은 질문 하나</div>
+      <div class="hr"></div><div class="total"><span>한입 요약</span><span>길수록 비싸</span></div>
+    </div></div>
+    <div class="cap">5장 HOW(기준) → <b>주문 옵션 체크</b></div>
+  </div>
+
+  <div class="cell">
+    <div class="f"><span class="pg">6/9</span><div class="paper">
+      <div class="shop">KITCHEN ORDER</div><div class="sub">처리 과정</div>
+      <div class="step"><b>1</b>문장 입력<br><b>2</b>조각으로 쪼갬<br><b>3</b>조각마다 번호<br><b>4</b>번호로 계산<br><b>5</b>다시 글로 조립</div>
+      <div class="hr"></div><div class="total"><span>한입 요약</span><span>쪼개고 다시 조립</span></div>
+    </div></div>
+    <div class="cap">6장 EXAMPLE(장면) → <b>주방 주문표</b><br>순서대로 처리되는 모습</div>
+  </div>
+
+  <div class="cell">
+    <div class="f"><span class="pg">7/9</span><div class="paper">
+      <div class="shop">TODAY'S SPECIAL</div><div class="sub">요즘 화제 (크롤링)</div>
+      <div class="news"><b>뉴스 제목 1</b>출처 · 한 줄 요약</div>
+      <div class="news"><b>커뮤니티 글 2</b>출처 · 한 줄 요약</div>
+      <div class="news"><b>뉴스 제목 3</b>출처 · 한 줄 요약</div>
+    </div></div>
+    <div class="cap">7장 WHY NOW → <b>오늘의 특선</b><br>크롤링한 최신 소식</div>
+  </div>
+
+  <div class="cell">
+    <div class="f"><span class="pg">8/9</span><div class="paper" style="box-shadow: inset 0 0 0 2px #ffd166;">
+      <div class="shop">CAUTION</div><div class="warn">⚠ 알레르기 정보</div>
+      <div class="line"><span>한글</span><i></i><span>토큰 더 씀</span></div>
+      <div class="line"><span>긴 대화</span><i></i><span>비용 누적</span></div>
+      <div class="line"><span>모델 변경</span><i></i><span>계산법 달라짐</span></div>
+      <div class="hr"></div><div class="total"><span>한입 요약</span><span>짧고 분명하게</span></div>
+    </div></div>
+    <div class="cap">8장 CAREFUL → <b>알레르기 정보</b><br>배경색을 바꿔 경고 느낌</div>
+  </div>
+
+  <div class="cell">
+    <div class="f" style="flex-direction:column;"><span class="pg">9/9</span>
+      <div class="paper">
+        <div class="shop">TOTAL</div><div class="sub">오늘 먹은 것</div>
+        <div class="line"><span>1 토큰은 조각</span><i></i><span>✓</span></div>
+        <div class="line"><span>2 토큰 수=비용</span><i></i><span>✓</span></div>
+        <div class="line"><span>3 한글은 더 씀</span><i></i><span>✓</span></div>
+        <div class="hr"></div><div class="total"><span>NEXT</span><span>컨텍스트 윈도우</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;width:100%;margin-top:8px">
+        <div style="font-size:9.5px;font-weight:900">오늘의 한입 소화 완료 <span style="color:#ff5d8f">♥</span><div style="font-size:7.5px;font-weight:400;opacity:.7;margin-top:2px">필요할 때 다시 먹으러 와</div></div>
+        <svg viewBox="60 40 280 260" style="width:34%">
+          <rect x="130" y="262" width="40" height="32" fill="#d6d0e4" stroke="#1b1430" stroke-width="8"/>
+          <rect x="230" y="262" width="40" height="32" fill="#d6d0e4" stroke="#1b1430" stroke-width="8"/>
+          <rect x="70" y="90" width="260" height="180" rx="14" fill="#f7f5fb" stroke="#1b1430" stroke-width="8"/>
+          <line x1="200" y1="90" x2="200" y2="60" stroke="#f7f5fb" stroke-width="7"/>
+          <polygon points="200,36 203.8,46.7 214.3,47.4 206.2,54 208.8,64.1 200,58.5 191.2,64.1 193.8,54 185.7,47.4 196.2,46.7" fill="#5b9dff" stroke="#0b0f20" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="140" y="108" width="18" height="24" fill="#1b1430"/>
+          <rect x="242" y="108" width="18" height="24" fill="#1b1430"/>
+          <line x1="100" y1="150" x2="300" y2="150" stroke="#1b1430" stroke-width="8"/>
+          <rect x="120" y="153" width="20" height="18" fill="#fff" stroke="#1b1430" stroke-width="4"/>
+          <rect x="260" y="153" width="20" height="18" fill="#fff" stroke="#1b1430" stroke-width="4"/>
+          <g transform="rotate(14 200 200)"><rect x="172" y="164" width="56" height="48" fill="#fff" stroke="#1b1430" stroke-width="5"/></g>
+          <path d="M138 192 h124 v34 q0 28 -28 28 h-68 q-28 0 -28 -28 z" fill="#ffd166" stroke="#1b1430" stroke-width="6"/>
+        </svg>
+      </div>
+    </div>
+    <div class="cap">9장 SUMMARY → <b>합계(TOTAL)</b><br>캐릭터가 다시 등장</div>
+  </div>
+
+</div>
