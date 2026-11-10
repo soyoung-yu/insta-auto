@@ -38,10 +38,16 @@ MEASURE_JS = """() => {
   const fits = [...document.querySelectorAll('.fit')];
   const overflow = fits.some(e => e.scrollHeight > e.clientHeight + 1 || e.scrollWidth > e.clientWidth + 1);
   const c = document.querySelector('.content');
-  let bottom = 0;
-  if (c) { for (const ch of c.children) bottom = Math.max(bottom, ch.getBoundingClientRect().bottom); }
-  return {overflow: overflow || bottom > %d, content_bottom: c ? bottom : %d};
-}""" % (HEIGHT - 70, HEIGHT)
+  let bottom = 0, right = 0;
+  if (c) {
+    for (const el of c.querySelectorAll('*')) {
+      const r = el.getBoundingClientRect();
+      right = Math.max(right, r.right);
+    }
+    for (const ch of c.children) bottom = Math.max(bottom, ch.getBoundingClientRect().bottom);
+  }
+  return {overflow: overflow || bottom > %d || right > %d, content_bottom: c ? bottom : %d};
+}""" % (HEIGHT - 70, WIDTH - 89, HEIGHT)
 
 
 @dataclass

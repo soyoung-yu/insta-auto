@@ -30,6 +30,7 @@
 - 모든 label 8, 모든 value 14, 모든 summary 14
 - definition.definition 24
 - compare.a/b.name 6, caption 8, total 10, compare.conclusion 18
+- compare.a/b.rows[]: label 4, value 8 (영수증이 반쪽 폭이라 더 짧게)
 - options.checks[].text 14, steps.steps[] 각 12
 - special.news[].title 24, source 12, summary 24, fallback 40
 - total.points[] 각 14, total.next_topic 14

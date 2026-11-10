@@ -20,6 +20,7 @@ def _limited(n: int):
     return Annotated[str, Field(min_length=1, max_length=n)]
 
 
+Str4 = _limited(4)
 Str6 = _limited(6)
 Str8 = _limited(8)
 Str10 = _limited(10)
@@ -46,10 +47,17 @@ class Definition(BaseModel):
     summary: Str14
 
 
+class CompareRow(BaseModel):
+    """Half-width receipt: shorter than Row."""
+
+    label: Str4
+    value: Str8
+
+
 class SetReceipt(BaseModel):
     name: Str6
     caption: Str8
-    rows: Annotated[list[Row], Field(min_length=2, max_length=3)]
+    rows: Annotated[list[CompareRow], Field(min_length=2, max_length=3)]
     total: Str10
 
 

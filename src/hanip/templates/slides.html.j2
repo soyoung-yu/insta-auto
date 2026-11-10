@@ -59,11 +59,12 @@ body {
 .fallback { font: 600 46px/1.5 "Pretendard", sans-serif; max-height: 280px; overflow: hidden; word-break: keep-all; }
 .band { background: #ffd166; color: #1b1430; font-weight: 700; font-size: 38px; text-align: center; padding: 10px; margin: 8px 0 22px; }
 
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
-.two .paper { padding: 44px 32px 70px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
+.two .paper { padding: 44px 28px 70px; min-width: 0; }
 .two .shop { font-size: 46px; }
-.two .line { font-size: 38px; }
-.two .total { font-size: 40px; }
+.two .line { font-size: 32px; }
+.two .line .leader { margin: 0 8px; min-width: 12px; }
+.two .total { font-size: 34px; }
 .conclusion { margin-top: 44px; text-align: center; font: 800 54px "Pretendard", sans-serif; white-space: nowrap; overflow: hidden; }
 
 .cover-wrap { position: absolute; left: 130px; top: 190px; width: 820px; }
