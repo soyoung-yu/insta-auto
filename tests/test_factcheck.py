@@ -69,3 +69,17 @@ def test_checker_failure_is_not_a_pass():
 def test_malformed_checker_answer_is_an_error():
     with pytest.raises(ClaudeError):
         check_post(TOPIC, post(), NEWS, run=lambda _: ["nope"])
+
+
+def test_checker_prompt_flags_only_wrong_explanations_not_simplifications():
+    seen = {}
+
+    def run(p):
+        seen["p"] = p
+        return {"issues": []}
+
+    check_post(TOPIC, post(), NEWS, run=run)
+    p = seen["p"]
+    assert "틀린 설명만" in p
+    assert "대표적인 경우" in p and "주로" in p  # typical-case simplifications are fine; no hedging fixes
+    assert "오해를 부르게" not in p
