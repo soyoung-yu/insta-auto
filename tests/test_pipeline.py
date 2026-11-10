@@ -48,8 +48,8 @@ class Fake:
             self._rec("usage_queries", topic)
             return ["usage q1", "usage q2"]
 
-        def generate_post(topic, next_topic, news, *, feedback=None, **k):
-            self._rec("generate_post", topic, feedback=feedback)
+        def generate_post(topic, next_topic, news, *, feedback=None, notes=None, **k):
+            self._rec("generate_post", topic, feedback=feedback, notes=notes)
             if self.gen_error:
                 raise self.gen_error
             p = Post.model_validate_json(FIXTURE.read_text())
@@ -420,3 +420,11 @@ def test_preview_report_lists_what_the_fact_check_made_us_fix(settings):
     report = f.calls["write_preview"][0][1]["report"]
     assert report.startswith("사실 확인: 통과")
     assert "고친 점" in report and "서버는 원격만이 아님" in report
+
+
+def test_review_notes_file_is_passed_to_generation(settings):
+    (settings.repo_dir / "data" / "review-notes.md").write_text("## 규칙\n- 비유 단어 금지\n")
+    put_state(settings)
+    f = Fake()
+    run_daily(settings, today=MON, deps=f.deps())
+    assert "비유 단어 금지" in f.calls["generate_post"][0][1]["notes"]

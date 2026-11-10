@@ -116,3 +116,14 @@ def test_ten_slide_schema_parts():
     p = Post.model_validate_json(FIXTURE.read_text())
     assert p.options.situations[0] == "에러가 어디서 났는지 볼 때"
     assert p.cover.title == "클라이언트와 서버가 뭐야?"  # full term, no abbreviation
+
+
+def test_review_notes_are_included_in_the_prompt():
+    seen = {}
+
+    def run(p):
+        seen["p"] = p
+        return good()
+
+    generate_post(TOPIC, None, [], notes="- 표지 제목은 줄이지 마", run=run)
+    assert "표지 제목은 줄이지 마" in seen["p"]

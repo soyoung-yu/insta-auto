@@ -146,7 +146,7 @@ class Post(BaseModel):
     hashtags: Annotated[list[str], Field(min_length=5, max_length=10)]
 
 
-def build_prompt(topic: Topic, next_topic: Topic | None, news: list[Any], feedback: str | None) -> str:
+def build_prompt(topic: Topic, next_topic: Topic | None, news: list[Any], feedback: str | None, notes: str | None = None) -> str:
     template = files("hanip.prompts").joinpath("post.md").read_text()
     news_json = json.dumps(
         [{"ref": i, "title": n.title, "source": n.source, "url": n.url, "snippet": n.summary} for i, n in enumerate(news)],
@@ -160,6 +160,7 @@ def build_prompt(topic: Topic, next_topic: Topic | None, news: list[Any], feedba
         .replace("{next_topic}", next_topic.title_ko if next_topic else "없음 (null로 둘 것)")
         .replace("{news}", news_json if news else "[] (관련 소식 없음 → special.news는 빈 배열, 이 장은 빠짐)")
         .replace("{feedback}", feedback or "없음")
+        .replace("{notes}", notes or "없음")
     )
 
 
@@ -185,13 +186,14 @@ def generate_post(
     news: list[Any],
     *,
     feedback: str | None = None,
+    notes: str | None = None,
     run=run_claude_json,
 ) -> Post:
     problem = None
     for _ in range(MAX_ATTEMPTS):
         prompt_feedback = "\n".join(filter(None, [feedback, problem])) or None
         try:
-            return Post.model_validate(run(build_prompt(topic, next_topic, news, prompt_feedback)))
+            return Post.model_validate(run(build_prompt(topic, next_topic, news, prompt_feedback, notes)))
         except ClaudeError as e:
             problem = f"이전 답을 JSON으로 읽을 수 없었어. 설명 없이 JSON 객체 하나만 출력해. ({e})"
         except ValidationError as e:

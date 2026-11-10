@@ -107,10 +107,12 @@ def _generate_and_render(settings, topic, next_topic, number, theme, out_dir, de
     """Generate → fact check → render; a failed check or overflow feeds back into the next generation."""
     # The usage slide shows where the concept is used today: search with usage-oriented queries
     news = deps.find_news(topic, queries=deps.usage_queries(topic), limit=NEWS_CANDIDATES)
+    notes_path = settings.repo_dir / "data" / "review-notes.md"
+    notes = notes_path.read_text() if notes_path.exists() else None
     feedback = None
     fixed: list[str] = []  # fact-check findings that earlier attempts were regenerated for
     for _ in range(MAX_GENERATIONS):
-        post = deps.generate_post(topic, next_topic, news, feedback=feedback)
+        post = deps.generate_post(topic, next_topic, news, feedback=feedback, notes=notes)
         check = deps.fact_check(topic, post, news)
         if not check.ok:
             feedback = check.feedback()
