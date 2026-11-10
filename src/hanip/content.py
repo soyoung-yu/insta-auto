@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from importlib.resources import files
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field, ValidationError, model_validator
 
@@ -29,6 +29,9 @@ Str14 = _limited(14)
 Str18 = _limited(18)
 Str24 = _limited(24)
 Str600 = _limited(600)
+Str20 = _limited(20)
+Str28 = _limited(28)
+Str30 = _limited(30)
 
 
 class Row(BaseModel):
@@ -37,18 +40,16 @@ class Row(BaseModel):
 
 
 class Cover(BaseModel):
-    title: Str12
-    subtitle: Str18
+    title: Str20  # full term, never abbreviated; the renderer shrinks the font to fit
+    subtitle: Str24
 
 
 class Definition(BaseModel):
-    definition: Str24
+    definition: Str30  # rendered with a line break after each comma
     rows: Annotated[list[Row], Field(min_length=3, max_length=3)]
 
 
 class CompareRow(BaseModel):
-    """Half-width receipt: shorter than Row."""
-
     label: Str4
     value: Str8
 
@@ -64,30 +65,39 @@ class SetReceipt(BaseModel):
 class Compare(BaseModel):
     a: SetReceipt
     b: SetReceipt
-    conclusion: Str18
+    conclusion: Str20
+
+
+class Myth(BaseModel):
+    wrong: Str20
+    right: Str28
+
+
+class Confusion(BaseModel):
+    items: Annotated[list[Myth], Field(min_length=2, max_length=3)]
 
 
 class Menu(BaseModel):
     items: Annotated[list[Row], Field(min_length=3, max_length=4)]
 
 
-class Check(BaseModel):
-    text: Str14
-    checked: bool
-
-
 class Options(BaseModel):
-    checks: Annotated[list[Check], Field(min_length=3, max_length=4)]
+    situations: Annotated[list[Str18], Field(min_length=3, max_length=4)]
+
+
+class Step(BaseModel):
+    text: Str14
+    who: Literal["a", "b", "other"]  # a/b = compare.a/b (colored), other = neither
 
 
 class Steps(BaseModel):
-    steps: Annotated[list[Str12], Field(min_length=3, max_length=5)]
+    steps: Annotated[list[Step], Field(min_length=3, max_length=5)]
 
 
 class SpecialNews(BaseModel):
     title: Str24
     source: Str12
-    summary: Str24
+    why: Str28  # how this item uses today's concept
 
 
 class Special(BaseModel):
@@ -101,8 +111,13 @@ class Special(BaseModel):
         return self
 
 
+class Warn(BaseModel):
+    title: Str14
+    reason: Str20
+
+
 class Caution(BaseModel):
-    items: Annotated[list[Row], Field(min_length=3, max_length=3)]
+    items: Annotated[list[Warn], Field(min_length=3, max_length=3)]
 
 
 class Total(BaseModel):
@@ -115,6 +130,7 @@ class Post(BaseModel):
     cover: Cover
     definition: Definition
     compare: Compare
+    confusion: Confusion
     menu: Menu
     options: Options
     steps: Steps

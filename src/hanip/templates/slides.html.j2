@@ -19,6 +19,7 @@ body {
   background-size: 16px 16px;
   color: {{ c.text }};
   font-family: "Pretendard", sans-serif;
+  word-break: keep-all;
 }
 .tag { position: absolute; left: 72px; top: 56px; font: 700 40px "D2Coding", monospace; color: {{ c.accent }}; letter-spacing: 2px; }
 .pg { position: absolute; right: 72px; top: 60px; font: 700 34px "D2Coding", monospace; color: {{ c.muted }}; }
@@ -31,57 +32,85 @@ body {
 .content.top { justify-content: flex-start; }
 .content > * { flex: 0 0 auto; }
 
-.paper {
-  background: {{ c.paper }};
-  color: {{ c.text }};
-  box-shadow: inset 0 0 0 4px {{ c.edge }};
-  padding: 56px 56px 80px;
-  font-family: "D2Coding", monospace;
-}
-/* torn (zigzag) edges: mid pages are torn at both ends (the paper keeps going), the last page only at the top */
-.paper.edge-both {
-  padding-top: 80px;
-  -webkit-mask:
-    radial-gradient(circle 16px at 50% 0, transparent 98%, #000) top / 40px 51% repeat-x,
-    radial-gradient(circle 16px at 50% 100%, transparent 98%, #000) bottom / 40px 51% repeat-x;
-}
-.paper.edge-top {
-  padding-top: 80px; padding-bottom: 56px;
-  -webkit-mask: radial-gradient(circle 16px at 50% 0, transparent 98%, #000) top / 40px 100% repeat-x;
-}
-.paper.warn { box-shadow: inset 0 0 0 6px {{ c.warn_border }}; }
-.shop { text-align: center; font-weight: 700; font-size: 54px; letter-spacing: 2px; margin-bottom: 30px; }
-.sub { text-align: center; font-size: 34px; color: {{ c.muted }}; margin: 10px 0 30px; }
-.hr { border-top: 4px dashed {{ c.text }}; opacity: .3; margin: 26px 0; }
-.line { display: flex; align-items: baseline; font-size: 42px; line-height: 1.9; }
+/* paper: one long strip across slides 2–10. Straight edge where it starts (2) and ends (10), torn in between */
+.paper { background: {{ c.paper }}; color: {{ c.text }}; box-shadow: inset 0 0 0 4px {{ c.edge }}; padding: 64px 60px; }
+.paper.edge-bottom { padding-bottom: 88px; -webkit-mask: radial-gradient(circle 16px at 50% 100%, transparent 98%, #000) bottom / 40px 100% repeat-x; }
+.paper.edge-both { padding-top: 88px; padding-bottom: 88px;
+  -webkit-mask: radial-gradient(circle 16px at 50% 0, transparent 98%, #000) top / 40px 51% repeat-x,
+                radial-gradient(circle 16px at 50% 100%, transparent 98%, #000) bottom / 40px 51% repeat-x; }
+.paper.edge-top { padding-top: 88px; -webkit-mask: radial-gradient(circle 16px at 50% 0, transparent 98%, #000) top / 40px 100% repeat-x; }
+.paper.caution { box-shadow: inset 0 0 0 6px {{ c.warn_border }}; }
+
+/* highlighter question title */
+h2.hl { display: inline; font: 900 62px/1.3 "Pretendard", sans-serif;
+  background: linear-gradient(transparent 58%, {{ c.marker }} 58%, {{ c.marker }} 90%, transparent 90%); }
+.head { margin-bottom: 44px; }
+
+/* concept colors: a = first compared thing, b = second, o = neither */
+.ca { background: {{ c.a_bg }}; color: {{ c.a_fg }}; padding: 0 8px; border-radius: 6px; }
+.cb { background: {{ c.b_bg }}; color: {{ c.b_fg }}; padding: 0 8px; border-radius: 6px; }
+
+.line { display: flex; align-items: baseline; font: 400 40px/1.9 "D2Coding", monospace; }
 .line .label { flex: 0 0 auto; white-space: nowrap; }
 .line .leader { flex: 1 1 24px; min-width: 24px; border-bottom: 4px dotted {{ c.text }}; opacity: .3; margin: 0 14px; transform: translateY(-10px); }
 .line .value { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; }
-.def { font: 800 62px/1.3 "Pretendard", sans-serif; color: {{ c.accent }}; max-height: 164px; overflow: hidden; word-break: keep-all; }
-.total { display: flex; justify-content: space-between; gap: 20px; font-size: 44px; font-weight: 700; }
-.total .v { white-space: nowrap; overflow: hidden; min-width: 0; }
-.check { font-size: 44px; line-height: 1.9; white-space: nowrap; overflow: hidden; }
-.step { font-size: 44px; line-height: 1.85; white-space: nowrap; overflow: hidden; }
-.step b { color: {{ c.accent }}; margin-right: 22px; }
-.news { margin: 18px 0 26px; }
-.news .t { font: 700 44px/1.3 "Pretendard", sans-serif; max-height: 116px; overflow: hidden; word-break: keep-all; }
-.news .s { font-size: 32px; line-height: 1.4; color: {{ c.muted }}; margin-top: 8px; max-height: 92px; overflow: hidden; }
-.fallback { font: 600 46px/1.5 "Pretendard", sans-serif; max-height: 280px; overflow: hidden; word-break: keep-all; }
-.band { background: #ffd166; color: #1b1430; font-weight: 700; font-size: 38px; text-align: center; padding: 10px; margin: 8px 0 22px; }
+.def { font: 800 58px/1.45 "Pretendard", sans-serif; max-height: 260px; overflow: hidden; margin-bottom: 36px; }
 
-.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
-.two .paper { padding: 70px 28px 70px; min-width: 0; }
-.two .shop { font-size: 46px; }
-.two .line { font-size: 32px; }
-.two .line .leader { margin: 0 8px; min-width: 12px; }
-.two .total { font-size: 34px; }
-.conclusion { margin-top: 44px; text-align: center; font: 800 54px "Pretendard", sans-serif; white-space: nowrap; overflow: hidden; }
+table.cmp { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.cmp th { font: 800 42px "Pretendard", sans-serif; padding: 16px 6px; white-space: nowrap; overflow: hidden; border-radius: 16px 16px 0 0; }
+.cmp col.k { width: 22%; }
+.cmp td { font: 600 36px/1.3 "Pretendard", sans-serif; text-align: center; padding: 22px 6px; border-top: 3px dashed {{ c.edge }}; white-space: nowrap; overflow: hidden; }
+.cmp td.k { font: 700 30px "D2Coding", monospace; color: {{ c.muted }}; }
+.cmp .cap td { font: 400 28px "Pretendard", sans-serif; color: {{ c.muted }}; border-top: 0; padding-top: 0; }
+.conclusion { margin-top: 40px; text-align: center; font: 800 48px "Pretendard", sans-serif; white-space: nowrap; overflow: hidden; }
+
+.myth { margin-bottom: 34px; }
+.myth .w, .myth .r { display: flex; gap: 20px; align-items: baseline; font: 700 42px/1.4 "Pretendard", sans-serif; }
+.myth .w { color: {{ c.muted }}; text-decoration: line-through; text-decoration-thickness: 3px; }
+.myth .r { margin-top: 10px; }
+.myth .mk { flex: 0 0 52px; text-decoration: none; display: inline-block; font-weight: 900; }
+.myth .w .mk { color: {{ c.muted }}; }
+.myth .r .mk { color: {{ c.accent }}; }
+
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.tile { border: 4px solid {{ c.edge }}; border-radius: 22px; padding: 30px 28px; font: 400 34px/1.4 "Pretendard", sans-serif; min-height: 210px; overflow: hidden; }
+.tile b { display: block; font: 800 40px "Pretendard", sans-serif; margin-bottom: 12px; color: {{ c.accent }}; }
+
+.bubble { position: relative; font: 600 40px/1.4 "Pretendard", sans-serif; padding: 26px 36px; border-radius: 40px; background: {{ c.bubble }}; margin-bottom: 26px; overflow: hidden; }
+.bubble::before { content: "✓"; color: {{ c.accent }}; font-weight: 900; margin-right: 18px; }
+.bubble.r { margin-left: 70px; }
+
+.flow { display: flex; flex-direction: column; align-items: center; }
+.node span { display: block; white-space: nowrap; overflow: hidden; }
+.node { width: 86%; text-align: center; font: 700 40px/1.3 "Pretendard", sans-serif; padding: 20px 24px; border-radius: 22px; white-space: nowrap; overflow: hidden; }
+.node b { font-family: "D2Coding", monospace; margin-right: 16px; }
+.node.na { background: {{ c.a_bg }}; color: {{ c.a_fg }}; }
+.node.nb { background: {{ c.b_bg }}; color: {{ c.b_fg }}; }
+.node.no { background: {{ c.o_bg }}; color: {{ c.o_fg }}; }
+.arrow { color: {{ c.muted }}; font: 700 40px/1.2 "Pretendard", sans-serif; }
+
+.news { border-left: 10px solid {{ c.accent }}; padding: 6px 0 6px 30px; margin-bottom: 40px; }
+.news .t { font: 800 42px/1.3 "Pretendard", sans-serif; max-height: 112px; overflow: hidden; }
+.news .s { font: 700 28px "D2Coding", monospace; color: {{ c.muted }}; margin-top: 8px; }
+.news .y { font: 500 34px/1.4 "Pretendard", sans-serif; margin-top: 10px; max-height: 96px; overflow: hidden; }
+.news .y::before { content: "→ "; color: {{ c.accent }}; font-weight: 800; }
+.fallback { font: 600 46px/1.5 "Pretendard", sans-serif; max-height: 280px; overflow: hidden; }
+
+.warn { display: flex; gap: 28px; align-items: flex-start; margin-bottom: 36px; }
+.warn .ic { flex: 0 0 66px; height: 66px; border-radius: 50%; background: #ffd166; color: #1b1430; text-align: center; font: 900 38px/66px "Pretendard", sans-serif; }
+.warn .tx { min-width: 0; }
+.warn b { display: block; font: 800 44px/1.3 "Pretendard", sans-serif; white-space: nowrap; overflow: hidden; }
+.warn span { display: block; font: 400 34px/1.4 "Pretendard", sans-serif; color: {{ c.muted }}; margin-top: 6px; white-space: nowrap; overflow: hidden; }
+
+.total { display: flex; justify-content: space-between; gap: 20px; font: 700 42px "D2Coding", monospace; }
+.total .v { white-space: nowrap; overflow: hidden; min-width: 0; }
+.hr { border-top: 4px dashed {{ c.text }}; opacity: .3; margin: 26px 0; }
 
 .cover-wrap { position: absolute; left: 130px; top: 190px; width: 820px; }
 .char-cover { width: 820px; display: block; }
-.mouth { position: absolute; left: 128px; top: 307px; width: 564px; height: 577px; padding: 48px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: hidden; }
-.mouth .title { font: 900 78px/1.2 "Pretendard", sans-serif; color: #fff; word-break: keep-all; max-height: 290px; overflow: hidden; }
-.mouth .subtitle { font: 600 40px/1.35 "Pretendard", sans-serif; color: #ffadc9; margin-top: 26px; word-break: keep-all; max-height: 110px; overflow: hidden; }
+.mouth { position: absolute; left: 128px; top: 307px; width: 564px; height: 577px; padding: 44px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: hidden; }
+.mouth .title { font: 900 78px/1.2 "Pretendard", sans-serif; color: #fff; max-height: 290px; overflow: hidden; }
+.mouth .subtitle { font: 600 40px/1.35 "Pretendard", sans-serif; color: #ffadc9; margin-top: 26px; max-height: 110px; overflow: hidden; }
 
 .signoff { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 46px; gap: 24px; }
 .signoff .big { font: 900 50px "Pretendard", sans-serif; white-space: nowrap; }
@@ -96,14 +125,16 @@ body {
 </head>
 <body>
 <div class="tag">{{ tag }}</div>
-{% if n > 1 %}<div class="pg">{{ n }} / 9</div>{% endif %}
+{% if n > 1 %}<div class="pg">{{ n }} / {{ total_slides }}</div>{% endif %}
+
+{% macro head(title) %}<div class="head"><h2 class="hl">{{ title }}</h2></div>{% endmacro %}
 
 {% if n == 1 %}
   <div class="cover-wrap">
     {{ cover_svg }}
     <div class="mouth fit">
-      <div class="title fit">{{ post.cover.title }}</div>
-      <div class="subtitle fit">{{ post.cover.subtitle }}</div>
+      <div class="title fit" data-autofit="44">{{ post.cover.title }}</div>
+      <div class="subtitle fit" data-autofit="30">{{ post.cover.subtitle }}</div>
     </div>
   </div>
   <div class="foot"><span class="handle">{{ handle }}</span><span class="swipe">SWIPE &gt;</span></div>
@@ -112,71 +143,84 @@ body {
 <div class="content {{ align }}">
 
 {% if n == 2 %}
-  {% set d = post.definition %}
-  <div class="paper edge-both">
-    <div class="shop">정의</div>
-    <div class="def fit">{{ d.definition }}</div>
-    <div class="hr"></div>
-    {% for r in d.rows %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
+  <div class="paper edge-bottom">
+    {{ head("그래서 뭔데?") }}
+    <div class="def fit">{{ concepts(post.definition.definition) }}</div>
+    {% for r in post.definition.rows %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
   </div>
 
 {% elif n == 3 %}
   {% set cp = post.compare %}
-  <div class="shop">비교</div>
-  <div class="two">
-  {% for s in [cp.a, cp.b] %}
-    <div class="paper edge-both">
-      <div class="shop fit" style="white-space:nowrap;overflow:hidden">{{ s.name }}</div><div class="sub">{{ s.caption }}</div>
-      {% for r in s.rows %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
-    </div>
-  {% endfor %}
+  <div class="paper edge-both">
+    {{ head("뭐가 달라?") }}
+    <table class="cmp">
+      <colgroup><col class="k"><col><col></colgroup>
+      <tr><th></th><th class="ca">{{ cp.a.name }}</th><th class="cb">{{ cp.b.name }}</th></tr>
+      <tr class="cap"><td></td><td class="fit">{{ cp.a.caption }}</td><td class="fit">{{ cp.b.caption }}</td></tr>
+      {% for ra in cp.a.rows %}{% set rb = cp.b.rows[loop.index0] if loop.index0 < cp.b.rows|length else none %}
+      <tr><td class="k">{{ ra.label }}</td><td class="fit">{{ ra.value }}</td><td class="fit">{{ rb.value if rb else "" }}</td></tr>
+      {% endfor %}
+    </table>
+    <div class="conclusion fit">{{ concepts(cp.conclusion) }}</div>
   </div>
-  <div class="conclusion fit">{{ cp.conclusion }}</div>
 
 {% elif n == 4 %}
-  {% set m = post.menu %}
   <div class="paper edge-both">
-    <div class="shop">예시</div>
-    {% for r in m.items %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
+    {{ head("헷갈리지 마!") }}
+    {% for m in post.confusion.items %}
+    <div class="myth">
+      <div class="w"><span class="mk">✗</span><span class="fit">{{ m.wrong }}</span></div>
+      <div class="r"><span class="mk">✓</span><span class="fit">{{ m.right }}</span></div>
+    </div>
+    {% endfor %}
   </div>
 
 {% elif n == 5 %}
-  {% set o = post.options %}
   <div class="paper edge-both">
-    <div class="shop">언제 알아야 해</div>
-    {% for ch in o.checks %}<div class="check fit">{{ '☑' if ch.checked else '☐' }} {{ ch.text }}</div>{% endfor %}
+    {{ head("어디서 봤더라?") }}
+    <div class="tiles">
+      {% for r in post.menu.items %}<div class="tile"><b>{{ r.label }}</b><span class="fit">{{ r.value }}</span></div>{% endfor %}
+    </div>
   </div>
 
 {% elif n == 6 %}
-  {% set st = post.steps %}
   <div class="paper edge-both">
-    <div class="shop">동작 순서</div>
-    {% for s in st.steps %}<div class="step fit"><b>{{ loop.index }}</b>{{ s }}</div>{% endfor %}
+    {{ head("언제 알아야 해?") }}
+    {% for s in post.options.situations %}<div class="bubble{{ ' r' if loop.index is even else '' }} fit">{{ s }}</div>{% endfor %}
   </div>
 
 {% elif n == 7 %}
-  {% set sp = post.special %}
   <div class="paper edge-both">
-    <div class="shop">요즘 소식</div>
-    {% if sp.news %}
-      {% for item in sp.news %}<div class="news"><div class="t fit">{{ item.title }}</div><div class="s fit">{{ item.source }} · {{ item.summary }}</div></div>{% endfor %}
-    {% else %}
-      <div class="fallback fit">{{ sp.fallback }}</div>
-    {% endif %}
+    {{ head("어떻게 돌아가?") }}
+    <div class="flow">
+      {% for s in post.steps.steps %}
+        {% if not loop.first %}<div class="arrow">↓</div>{% endif %}
+        <div class="node n{{ s.who[0] }}"><span class="fit"><b>{{ loop.index }}</b>{{ s.text }}</span></div>
+      {% endfor %}
+    </div>
   </div>
 
 {% elif n == 8 %}
-  {% set ca = post.caution %}
-  <div class="paper edge-both warn">
-    <div class="shop">주의할 점</div>
-    <div class="band">⚠ 주의</div>
-    {% for r in ca.items %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
+  {% set sp = post.special %}
+  <div class="paper edge-both">
+    {{ head("요즘 어디에 쓰여?") }}
+    {% if sp.news %}
+      {% for item in sp.news %}<div class="news"><div class="t fit">{{ item.title }}</div><div class="s">{{ item.source }}</div><div class="y fit">{{ item.why }}</div></div>{% endfor %}
+    {% else %}
+      <div class="fallback fit">{{ concepts(sp.fallback) }}</div>
+    {% endif %}
   </div>
 
 {% elif n == 9 %}
+  <div class="paper edge-both caution">
+    {{ head("이건 조심!") }}
+    {% for w in post.caution.items %}<div class="warn"><span class="ic">{{ loop.index }}</span><div class="tx"><b class="fit">{{ w.title }}</b><span class="fit">{{ w.reason }}</span></div></div>{% endfor %}
+  </div>
+
+{% elif n == 10 %}
   {% set tt = post.total %}
   <div class="paper edge-top">
-    <div class="shop">요약</div>
+    {{ head("오늘 먹은 것") }}
     {% for p in tt.points %}<div class="line"><span class="label fit" style="overflow:hidden">{{ loop.index }} {{ p }}</span><i class="leader"></i><span class="value">✓</span></div>{% endfor %}
     {% if tt.next_topic %}<div class="hr"></div>
     <div class="total"><span>NEXT</span><span class="v fit">{{ tt.next_topic }}</span></div>{% endif %}

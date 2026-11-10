@@ -38,6 +38,7 @@ from hanip.state import (
 log = logging.getLogger(__name__)
 
 TOKEN_REFRESH_DAYS = 50
+NEWS_CANDIDATES = 6
 MAX_GENERATIONS = 3  # first try + 2 retries on overflow
 APP = "오늘의 한입"
 
@@ -61,6 +62,7 @@ def _make_instagram(settings: Settings):
 @dataclass
 class Deps:
     find_news: Callable[..., Any] = crawler.find_news
+    usage_queries: Callable[..., Any] = crawler.suggest_usage_queries
     generate_post: Callable[..., Any] = generate_post
     render_post: Callable[..., Any] = render.render_post
     write_preview: Callable[..., Any] = render.write_preview
@@ -101,7 +103,8 @@ def _maybe_refresh_token(settings: Settings, state: State, today: date, deps: De
 
 
 def _generate_and_render(settings, topic, next_topic, number, theme, out_dir, deps) -> tuple[Post, list[Path]]:
-    news = deps.find_news(topic)
+    # Slide 8 shows where the concept is used today: search with usage-oriented queries, give Claude 6 candidates
+    news = deps.find_news(topic, queries=deps.usage_queries(topic), limit=NEWS_CANDIDATES)
     feedback = None
     for _ in range(MAX_GENERATIONS):
         post = deps.generate_post(topic, next_topic, news, feedback=feedback)
@@ -128,7 +131,7 @@ def _record(state: State, settings: Settings, *, number: int, day: str, topic_id
 def _publish(settings: Settings, state: State, *, number: int, topic_id: str, theme: str, out_dir: Path, today: date, deps: Deps) -> Outcome:
     try:
         post = Post.model_validate_json((out_dir / "post.json").read_text())
-        paths = [out_dir / f"slide-{i:02d}.jpg" for i in range(1, 10)]
+        paths = [out_dir / f"slide-{i:02d}.jpg" for i in range(1, render.SLIDES + 1)]
         urls = deps.publish_images(paths, number=number, repo_dir=settings.repo_dir, base_url=settings.image_base_url)
         client = deps.make_instagram(settings)
         container = client.prepare_carousel(urls, full_caption(post))

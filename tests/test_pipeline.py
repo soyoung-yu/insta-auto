@@ -37,8 +37,12 @@ class Fake:
 
     def deps(self):
         def find_news(topic, **k):
-            self._rec("find_news", topic)
+            self._rec("find_news", topic, **k)
             return []
+
+        def usage_queries(topic, **k):
+            self._rec("usage_queries", topic)
+            return ["usage q1", "usage q2"]
 
         def generate_post(topic, next_topic, news, *, feedback=None, **k):
             self._rec("generate_post", topic, feedback=feedback)
@@ -52,7 +56,7 @@ class Fake:
             self._rec("render_post", number=number, theme=theme)
             out_dir.mkdir(parents=True, exist_ok=True)
             paths = []
-            for i in range(1, 10):
+            for i in range(1, 11):
                 p = out_dir / f"slide-{i:02d}.jpg"
                 p.write_bytes(b"x")
                 paths.append(p)
@@ -101,6 +105,7 @@ class Fake:
 
         return Deps(
             find_news=find_news,
+            usage_queries=usage_queries,
             generate_post=generate_post,
             render_post=render_post,
             write_preview=write_preview,
@@ -327,3 +332,19 @@ def test_caption_ends_with_discussion_invite_right_above_hashtags():
     assert invite == DISCUSSION_INVITE
     assert tags == " ".join(post.hashtags)
     assert "댓글" in invite and "같이" in invite
+
+
+def test_publish_sends_all_ten_slides(settings):
+    put_state(settings, published_count=5, curriculum_index=5)
+    f = Fake()
+    run_daily(settings, today=MON, deps=f.deps())
+    urls = f.calls["prepare_carousel"][0][0][0]
+    assert len(urls) == 10 and urls[-1].endswith("slide-10.jpg")
+
+
+def test_news_is_searched_with_usage_queries(settings):
+    put_state(settings)
+    f = Fake()
+    run_daily(settings, today=MON, deps=f.deps())
+    assert f.calls["find_news"][0][1]["queries"] == ["usage q1", "usage q2"]
+    assert f.calls["find_news"][0][1]["limit"] == 6

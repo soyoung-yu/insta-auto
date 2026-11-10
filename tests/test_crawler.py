@@ -68,3 +68,33 @@ def test_find_news_survives_source_error():
 
 def test_newsitem_fields():
     assert NewsItem("t", "s", "u", "x").summary == "x"
+
+
+def test_find_news_searches_hn_with_each_usage_query():
+    seen = []
+
+    def get(url, **k):
+        if "hada" in url:
+            return gn_get(url)
+        seen.append(k["params"]["query"])
+        return resp(json_data={"hits": []})
+
+    find_news(TOPIC, queries=["built with REST API", "agent tool server"], http_get=get)
+    assert seen == ["built with REST API", "agent tool server"]
+
+
+def test_suggest_usage_queries_returns_short_english_queries():
+    from hanip.crawler import suggest_usage_queries
+
+    qs = suggest_usage_queries(TOPIC, run=lambda p: ["token pricing in production", "tokenizer used by agents", "x" * 80])
+    assert qs == ["token pricing in production", "tokenizer used by agents"]  # over-long query dropped
+
+
+def test_suggest_usage_queries_falls_back_to_keyword_on_error():
+    from hanip.claude_cli import ClaudeError
+    from hanip.crawler import suggest_usage_queries
+
+    def boom(p):
+        raise ClaudeError("x")
+
+    assert suggest_usage_queries(TOPIC, run=boom) == ["token"]

@@ -7,28 +7,34 @@ the second adds a filler character to mid slides whose content ends above half h
 from __future__ import annotations
 
 import html as html_lib
+import re
 from dataclasses import dataclass
 from importlib.resources import files
 from pathlib import Path
 
 from jinja2 import Environment, PackageLoader
+from markupsafe import Markup, escape
 from playwright.sync_api import Page, sync_playwright
 
 from hanip.characters import POSES, cover_svg, ending_svg, pose_svg
 from hanip.content import Post
 
-__all__ = ["POSES", "RenderResult", "build_html", "measure", "render_post", "write_preview"]
+__all__ = ["POSES", "SLIDES", "RenderResult", "build_html", "measure", "render_post", "write_preview"]
 
 WIDTH, HEIGHT = 1080, 1350
 HALF = HEIGHT / 2
 CHROME_CHANNEL = "chrome"  # bundled Chromium download is blocked on the corporate network
 JPEG_QUALITY = 92
 
+SLIDES = 10
+
 THEMES = {
     "light": dict(bg="#fff7fa", dots="#fbeef3", paper="#ffffff", edge="#f0d3df", text="#1b1430",
-                  accent="#e8336f", muted="#9a90ad", warn_border="#f2b632"),
+                  accent="#e8336f", muted="#9a90ad", warn_border="#f2b632", marker="#ffd166", bubble="#fff1f6",
+                  a_bg="#ffd6e4", a_fg="#b8124d", b_bg="#fff1c2", b_fg="#8a6200", o_bg="#eee9f6", o_fg="#5b4f7a"),
     "dark": dict(bg="#16121e", dots="#1d1827", paper="#2a2238", edge="#3a3050", text="#f3eefc",
-                 accent="#ff8fb3", muted="#7d7499", warn_border="#ffd166"),
+                 accent="#ff8fb3", muted="#7d7499", warn_border="#ffd166", marker="#8a6a1c", bubble="#3a2f4d",
+                 a_bg="#5a2340", a_fg="#ffc2d8", b_bg="#4a3c14", b_fg="#ffd98a", o_bg="#322a44", o_fg="#c9bfe6"),
 }
 
 _env = Environment(loader=PackageLoader("hanip", "templates"), autoescape=True)
@@ -48,6 +54,32 @@ MEASURE_JS = """() => {
   }
   return {overflow: overflow || bottom > %d || right > %d, content_bottom: c ? bottom : %d};
 }""" % (HEIGHT - 70, WIDTH - 89, HEIGHT)
+
+
+FIT_JS = """() => {
+  for (const el of document.querySelectorAll('[data-autofit]')) {
+    const min = parseFloat(el.dataset.autofit);
+    let size = parseFloat(getComputedStyle(el).fontSize);
+    while ((el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1) && size > min) {
+      size -= 2;
+      el.style.fontSize = size + 'px';
+    }
+  }
+}"""
+
+
+def concept_markup(text: str | None, a: str, b: str) -> Markup:
+    """Escape text, color the two compared concept names, and break the line after each comma."""
+    if not text:
+        return Markup("")
+    out = str(escape(text))
+    names = sorted({(a, "ca"), (b, "cb")}, key=lambda x: -len(x[0]))
+    pattern = "|".join(re.escape(str(escape(n))) for n, _ in names if n)
+    if pattern:
+        cls = {str(escape(n)): c for n, c in names}
+        out = re.sub(pattern, lambda m: f'<span class="{cls[m.group(0)]}">{m.group(0)}</span>', out)
+    out = re.sub(r",\s*", ",<br>", out)
+    return Markup(out)
 
 
 @dataclass
@@ -76,8 +108,11 @@ def build_html(
         cover_svg=cover_svg(theme),
         ending_svg=ending_svg(theme),
     )
+    a, b = post.compare.a.name, post.compare.b.name
+    common["concepts"] = lambda text: concept_markup(text, a, b)
+    common["total_slides"] = SLIDES
     pages = []
-    for n in range(1, 10):
+    for n in range(1, SLIDES + 1):
         pose = pose_svg(filler[n], theme) if n in filler else None
         align = "top" if (pose or not center) else "center"
         pages.append(tpl.render(n=n, pose=pose, align=align, **common))
@@ -92,6 +127,7 @@ def _load(page: Page, html: str, path: Path) -> None:
     path.write_text(html)
     page.goto(path.resolve().as_uri())
     page.evaluate("document.fonts.ready")
+    page.evaluate(FIT_JS)
 
 
 def render_post(post: Post, *, number: int, theme: str, handle: str, out_dir: Path) -> RenderResult:
@@ -106,7 +142,7 @@ def render_post(post: Post, *, number: int, theme: str, handle: str, out_dir: Pa
             filler = {}
             for n, html in enumerate(first, start=1):
                 _load(page, html, html_dir / f"slide-{n:02d}.html")
-                if 2 <= n <= 8 and measure(page)["content_bottom"] < HALF:
+                if 2 <= n <= SLIDES - 1 and measure(page)["content_bottom"] < HALF:
                     filler[n] = POSES[(number + n) % len(POSES)]
             final = build_html(post, number=number, theme=theme, handle=handle, filler=filler)
             paths, overflow = [], []

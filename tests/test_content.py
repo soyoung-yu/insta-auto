@@ -80,7 +80,7 @@ def test_generate_post_retries_once_on_non_json_answer():
             raise ClaudeError("답변이 JSON이 아님")
         return good()
 
-    assert generate_post(TOPIC, None, [], run=run).topic_id == "token"
+    assert generate_post(TOPIC, None, [], run=run).topic_id == "client-server"
     assert "JSON" in calls[1]
 
 
@@ -104,3 +104,16 @@ def test_retry_feedback_names_field_length_and_limit_and_allows_two_retries():
     generate_post(TOPIC, None, [], run=run)
     assert len(calls) == 3
     assert "definition.rows.1.value" in calls[1] and "15자" in calls[1] and "14자" in calls[1]
+
+
+def test_ten_slide_schema_parts():
+    from hanip.content import Confusion, SpecialNews, Step
+
+    with pytest.raises(ValidationError):
+        Step(text="요청", who="client")  # must be a / b / other
+    with pytest.raises(ValidationError):
+        Confusion(items=[{"wrong": "x", "right": "y"}])  # at least 2 myths
+    assert SpecialNews(title="t", source="HN", why="에이전트가 서버를 부름").why
+    p = Post.model_validate_json(FIXTURE.read_text())
+    assert p.options.situations[0] == "에러가 어디서 났는지 볼 때"
+    assert p.cover.title == "클라이언트와 서버가 뭐야?"  # full term, no abbreviation

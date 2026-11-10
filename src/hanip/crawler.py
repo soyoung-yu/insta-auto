@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 import feedparser
 import requests
 
+from hanip.claude_cli import ClaudeError, run_claude_json
 from hanip.curriculum import Topic
 
 log = logging.getLogger(__name__)
@@ -58,12 +59,26 @@ def fetch_hn(
     return items
 
 
-def find_news(topic: Topic, limit: int = 3, *, http_get=requests.get) -> list[NewsItem]:
+USAGE_PROMPT = """너는 기술 뉴스 검색 도우미야. 개념 "{title}"({keyword})이 **요즘 실제 제품·서비스·오픈소스에서 쓰인 사례**를
+Hacker News에서 찾으려고 해. 개념 설명 글이 아니라 "이 개념을 써서 만든 것/바꾼 것" 소식이 걸리도록 짧은 영어 검색어 3개를 만들어.
+각 검색어는 2~5 단어. JSON 문자열 배열만 출력."""
+
+
+def suggest_usage_queries(topic: Topic, *, run=run_claude_json) -> list[str]:
+    """Search queries aimed at real-world uses of the concept; falls back to the plain keyword."""
+    try:
+        raw = run(USAGE_PROMPT.format(title=topic.title_ko, keyword=topic.keyword_en))
+        queries = [q.strip() for q in raw if isinstance(q, str) and 0 < len(q.strip()) <= 60]
+    except (ClaudeError, TypeError) as e:
+        log.warning("usage query generation failed: %s", e)
+        queries = []
+    return queries[:3] or [topic.keyword_en]
+
+
+def find_news(topic: Topic, limit: int = 3, *, queries: list[str] | None = None, http_get=requests.get) -> list[NewsItem]:
     collected: list[NewsItem] = []
-    sources = [
-        lambda: fetch_geeknews(topic.keyword_en, title_ko=topic.title_ko, http_get=http_get),
-        lambda: fetch_hn(topic.keyword_en, http_get=http_get),
-    ]
+    sources = [lambda: fetch_geeknews(topic.keyword_en, title_ko=topic.title_ko, http_get=http_get)]
+    sources += [lambda q=q: fetch_hn(q, http_get=http_get) for q in (queries or [topic.keyword_en])]
     for fetch in sources:
         try:
             collected.extend(fetch())

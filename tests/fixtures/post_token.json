@@ -1,147 +1,61 @@
 {
-  "topic_id": "token",
-  "cover": {
-    "title": "토큰이 뭐야?",
-    "subtitle": "AI가 글을 읽는 단위"
-  },
+  "topic_id": "client-server",
+  "cover": {"title": "클라이언트와 서버가 뭐야?", "subtitle": "부탁하는 쪽과 들어주는 쪽"},
   "definition": {
-    "definition": "AI가 글을 잘게 쪼갠 조각",
+    "definition": "요청하면 클라이언트, 응답하면 서버야.",
     "rows": [
-      {
-        "label": "단위",
-        "value": "단어보다 작게"
-      },
-      {
-        "label": "읽는 방식",
-        "value": "토큰 단위"
-      },
-      {
-        "label": "요금 기준",
-        "value": "토큰 수"
-      }
+      {"label": "클라이언트", "value": "요청을 보내는 쪽"},
+      {"label": "서버", "value": "요청에 답하는 쪽"},
+      {"label": "요청·응답", "value": "둘이 주고받는 말"}
     ]
   },
   "compare": {
-    "a": {
-      "name": "영어",
-      "caption": "hello world",
-      "rows": [
-        {
-          "label": "단어1",
-          "value": "1토큰"
-        },
-        {
-          "label": "단어2",
-          "value": "1토큰"
-        }
-      ]
-    },
-    "b": {
-      "name": "한글",
-      "caption": "안녕 세상",
-      "rows": [
-        {
-          "label": "단어1",
-          "value": "2토큰"
-        },
-        {
-          "label": "단어2",
-          "value": "2토큰"
-        }
-      ]
-    },
-    "conclusion": "같은 뜻, 다른 토큰 수"
+    "a": {"name": "클라이언트", "caption": "내 기기에서 돌아가", "rows": [{"label": "위치", "value": "내 폰·PC"}, {"label": "하는 일", "value": "요청 보내기"}, {"label": "예시", "value": "브라우저, 앱"}]},
+    "b": {"name": "서버", "caption": "원격에서 늘 대기해", "rows": [{"label": "위치", "value": "원격 컴퓨터"}, {"label": "하는 일", "value": "처리 후 응답"}, {"label": "예시", "value": "웹·API 서버"}]},
+    "conclusion": "같은 컴퓨터도 역할 따라 바뀌어"
+  },
+  "confusion": {
+    "items": [
+      {"wrong": "서버 = 큰 컴퓨터", "right": "서버는 응답하는 역할, 그 컴퓨터는 호스트"},
+      {"wrong": "호스트 = 서버", "right": "호스트는 주소를 가진 컴퓨터 자체야"}
+    ]
   },
   "menu": {
     "items": [
-      {
-        "label": "GPT",
-        "value": "BPE 방식"
-      },
-      {
-        "label": "Claude",
-        "value": "자체 토크나이저"
-      },
-      {
-        "label": "Llama",
-        "value": "BPE 방식"
-      }
+      {"label": "웹 서핑", "value": "브라우저가 웹 서버에 요청"},
+      {"label": "모바일 앱", "value": "앱이 API 서버와 통신"},
+      {"label": "DB 조회", "value": "분석 툴이 DB에 질의"},
+      {"label": "AI 챗봇", "value": "앱이 모델 서버에 질문"}
     ]
   },
-  "options": {
-    "checks": [
-      {
-        "text": "글이 길 때",
-        "checked": true
-      },
-      {
-        "text": "한글 비중이 클 때",
-        "checked": true
-      },
-      {
-        "text": "대화가 길어질 때",
-        "checked": true
-      },
-      {
-        "text": "짧은 질문 하나",
-        "checked": false
-      }
-    ]
-  },
+  "options": {"situations": ["에러가 어디서 났는지 볼 때", "API 연동을 요청할 때", "느린 원인을 찾을 때"]},
   "steps": {
     "steps": [
-      "문장 입력",
-      "조각으로 쪼갬",
-      "조각마다 번호",
-      "번호로 계산",
-      "다시 글로 조립"
+      {"text": "클라이언트가 요청 보내", "who": "a"},
+      {"text": "네트워크로 서버에 도착", "who": "other"},
+      {"text": "서버가 요청을 처리해", "who": "b"},
+      {"text": "서버가 응답을 돌려줘", "who": "b"},
+      {"text": "화면에 결과가 보여", "who": "a"}
     ]
   },
   "special": {
     "news": [
-      {
-        "title": "토크나이저 비교 글 화제",
-        "source": "GeekNews",
-        "summary": "모델별 토큰 수 차이를 정리"
-      },
-      {
-        "title": "Token costs explained",
-        "source": "Hacker News",
-        "summary": "토큰 비용 구조를 설명한 글"
-      }
+      {"title": "에이전트용 API 서버 공개", "source": "Hacker News", "why": "에이전트가 도구 서버를 부르는 구조"},
+      {"title": "브라우저에서 도는 LLM", "source": "GeekNews", "why": "서버 없이 클라이언트에서 처리"}
     ],
     "fallback": null
   },
   "caution": {
     "items": [
-      {
-        "label": "한글",
-        "value": "토큰 더 씀"
-      },
-      {
-        "label": "긴 대화",
-        "value": "비용 누적"
-      },
-      {
-        "label": "모델 변경",
-        "value": "계산법 달라짐"
-      }
+      {"title": "비밀 키는 서버에만", "reason": "클라이언트 코드는 누구나 열어 봐"},
+      {"title": "입력은 서버가 재확인", "reason": "클라이언트 검사는 우회 가능"},
+      {"title": "에러 위치부터 확인", "reason": "화면 문제인지 서버 문제인지"}
     ]
   },
   "total": {
-    "points": [
-      "토큰은 글 조각",
-      "토큰 수가 곧 비용",
-      "한글은 더 많이 씀"
-    ],
-    "next_topic": "컨텍스트 윈도우"
+    "points": ["요청하면 클라이언트", "응답하면 서버", "역할은 바뀔 수 있어"],
+    "next_topic": "프론트엔드"
   },
-  "caption": "AI는 글자를 어떻게 셀까? 오늘의 한입은 토큰이에요.\n\n1. 토큰은 AI가 글을 쪼갠 조각이에요\n2. 요금은 토큰 수로 매겨져요\n3. 한글은 토큰을 더 많이 써요",
-  "hashtags": [
-    "#오늘의한입",
-    "#개발용어",
-    "#AI공부",
-    "#토큰",
-    "#AI에이전트"
-  ]
+  "caption": "앱을 누르면 화면 뒤에서 무슨 일이 일어날까?\n\n1. 요청하면 클라이언트, 응답하면 서버야\n2. 서버는 역할, 호스트는 컴퓨터야\n3. 같은 컴퓨터도 역할이 바뀔 수 있어",
+  "hashtags": ["#오늘의한입", "#클라이언트", "#서버", "#개발기초", "#AI에이전트"]
 }
