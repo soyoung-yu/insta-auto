@@ -54,7 +54,7 @@ def test_caution_slide_keeps_background_and_uses_yellow_border(post):
     dark = build_html(post, number=2, theme="dark", handle="h")[7]
     assert "#f2b632" in light and "#fff7fa" in light
     assert "#ffd166" in dark and "#16121e" in dark
-    assert "알레르기 정보" in light
+    assert "⚠ 주의" in light
 
 
 def test_user_text_is_escaped(post):
@@ -130,3 +130,21 @@ def test_compare_receipts_never_exceed_frame(post, tmp_path):
             right = pg.evaluate("Math.max(...[...document.querySelectorAll('.two .paper')].map(e => e.getBoundingClientRect().right))")
             b.close()
         assert right <= 1080 - 90 + 1
+
+
+def test_no_receipt_metaphor_words(post):
+    pages = build_html(post, number=1, theme="light", handle="h")
+    for word in ("한입 요약", "합계", "A 세트", "B 세트", "TODAY'S BITE", "MENU", "ORDER OPTION", "KITCHEN ORDER", "알레르기"):
+        assert not any(word in p for p in pages), word
+
+
+def test_plain_section_titles(post):
+    pages = build_html(post, number=1, theme="light", handle="h")
+    titles = ["정의", "비교", "예시", "언제 알아야 해", "동작 순서", "요즘 소식", "주의할 점", "요약"]
+    for page, title in zip(pages[1:], titles):
+        assert f'<div class="shop">{title}</div>' in page, title
+
+
+def test_compare_uses_concept_names(post):
+    page = build_html(post, number=1, theme="light", handle="h")[2]
+    assert ">영어<" in page and ">한글<" in page

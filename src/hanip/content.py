@@ -44,7 +44,6 @@ class Cover(BaseModel):
 class Definition(BaseModel):
     definition: Str24
     rows: Annotated[list[Row], Field(min_length=3, max_length=3)]
-    summary: Str14
 
 
 class CompareRow(BaseModel):
@@ -55,10 +54,11 @@ class CompareRow(BaseModel):
 
 
 class SetReceipt(BaseModel):
-    name: Str6
-    caption: Str8
+    """One side of the comparison, named after the compared thing itself (e.g. 클라이언트)."""
+
+    name: Str8
+    caption: Str12
     rows: Annotated[list[CompareRow], Field(min_length=2, max_length=3)]
-    total: Str10
 
 
 class Compare(BaseModel):
@@ -69,7 +69,6 @@ class Compare(BaseModel):
 
 class Menu(BaseModel):
     items: Annotated[list[Row], Field(min_length=3, max_length=4)]
-    summary: Str14
 
 
 class Check(BaseModel):
@@ -79,12 +78,10 @@ class Check(BaseModel):
 
 class Options(BaseModel):
     checks: Annotated[list[Check], Field(min_length=3, max_length=4)]
-    summary: Str14
 
 
 class Steps(BaseModel):
     steps: Annotated[list[Str12], Field(min_length=3, max_length=5)]
-    summary: Str14
 
 
 class SpecialNews(BaseModel):
@@ -106,7 +103,6 @@ class Special(BaseModel):
 
 class Caution(BaseModel):
     items: Annotated[list[Row], Field(min_length=3, max_length=3)]
-    summary: Str14
 
 
 class Total(BaseModel):

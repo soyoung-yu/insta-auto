@@ -40,7 +40,7 @@ body {
   -webkit-mask: radial-gradient(circle 16px at 50% 100%, transparent 98%, #000) 0 0 / 40px 100%;
 }
 .paper.warn { box-shadow: inset 0 0 0 6px {{ c.warn_border }}; }
-.shop { text-align: center; font-weight: 700; font-size: 54px; letter-spacing: 4px; }
+.shop { text-align: center; font-weight: 700; font-size: 54px; letter-spacing: 2px; margin-bottom: 30px; }
 .sub { text-align: center; font-size: 34px; color: {{ c.muted }}; margin: 10px 0 30px; }
 .hr { border-top: 4px dashed {{ c.text }}; opacity: .3; margin: 26px 0; }
 .line { display: flex; align-items: baseline; font-size: 42px; line-height: 1.9; }
@@ -104,23 +104,20 @@ body {
 {% if n == 2 %}
   {% set d = post.definition %}
   <div class="paper">
-    <div class="shop">TODAY'S BITE</div><div class="sub">메인 메뉴 · 정의</div>
+    <div class="shop">정의</div>
     <div class="def fit">{{ d.definition }}</div>
     <div class="hr"></div>
     {% for r in d.rows %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
-    <div class="hr"></div>
-    <div class="total"><span>한입 요약</span><span class="v fit">{{ d.summary }}</span></div>
   </div>
 
 {% elif n == 3 %}
   {% set cp = post.compare %}
+  <div class="shop">비교</div>
   <div class="two">
   {% for s in [cp.a, cp.b] %}
     <div class="paper">
       <div class="shop fit" style="white-space:nowrap;overflow:hidden">{{ s.name }}</div><div class="sub">{{ s.caption }}</div>
       {% for r in s.rows %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
-      <div class="hr"></div>
-      <div class="total"><span>합계</span><span class="v fit">{{ s.total }}</span></div>
     </div>
   {% endfor %}
   </div>
@@ -129,34 +126,28 @@ body {
 {% elif n == 4 %}
   {% set m = post.menu %}
   <div class="paper">
-    <div class="shop">MENU</div><div class="sub">메뉴판 · 대표 사례</div>
+    <div class="shop">예시</div>
     {% for r in m.items %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
-    <div class="hr"></div>
-    <div class="total"><span>한입 요약</span><span class="v fit">{{ m.summary }}</span></div>
   </div>
 
 {% elif n == 5 %}
   {% set o = post.options %}
   <div class="paper">
-    <div class="shop">ORDER OPTION</div><div class="sub">이럴 때 챙겨 봐</div>
+    <div class="shop">언제 알아야 해</div>
     {% for ch in o.checks %}<div class="check fit">{{ '☑' if ch.checked else '☐' }} {{ ch.text }}</div>{% endfor %}
-    <div class="hr"></div>
-    <div class="total"><span>한입 요약</span><span class="v fit">{{ o.summary }}</span></div>
   </div>
 
 {% elif n == 6 %}
   {% set st = post.steps %}
   <div class="paper">
-    <div class="shop">KITCHEN ORDER</div><div class="sub">주방 주문표 · 처리 과정</div>
+    <div class="shop">동작 순서</div>
     {% for s in st.steps %}<div class="step fit"><b>{{ loop.index }}</b>{{ s }}</div>{% endfor %}
-    <div class="hr"></div>
-    <div class="total"><span>한입 요약</span><span class="v fit">{{ st.summary }}</span></div>
   </div>
 
 {% elif n == 7 %}
   {% set sp = post.special %}
   <div class="paper">
-    <div class="shop">TODAY'S SPECIAL</div><div class="sub">오늘의 특선 · 요즘 화제</div>
+    <div class="shop">요즘 소식</div>
     {% if sp.news %}
       {% for item in sp.news %}<div class="news"><div class="t fit">{{ item.title }}</div><div class="s fit">{{ item.source }} · {{ item.summary }}</div></div>{% endfor %}
     {% else %}
@@ -167,17 +158,15 @@ body {
 {% elif n == 8 %}
   {% set ca = post.caution %}
   <div class="paper warn">
-    <div class="shop">CAUTION</div>
-    <div class="band">⚠ 알레르기 정보</div>
+    <div class="shop">주의할 점</div>
+    <div class="band">⚠ 주의</div>
     {% for r in ca.items %}<div class="line"><span class="label">{{ r.label }}</span><i class="leader"></i><span class="value fit">{{ r.value }}</span></div>{% endfor %}
-    <div class="hr"></div>
-    <div class="total"><span>한입 요약</span><span class="v fit">{{ ca.summary }}</span></div>
   </div>
 
 {% elif n == 9 %}
   {% set tt = post.total %}
   <div class="paper">
-    <div class="shop">TOTAL</div><div class="sub">오늘 먹은 것</div>
+    <div class="shop">요약</div>
     {% for p in tt.points %}<div class="line"><span class="label fit" style="overflow:hidden">{{ loop.index }} {{ p }}</span><i class="leader"></i><span class="value">✓</span></div>{% endfor %}
     {% if tt.next_topic %}<div class="hr"></div>
     <div class="total"><span>NEXT</span><span class="v fit">{{ tt.next_topic }}</span></div>{% endif %}

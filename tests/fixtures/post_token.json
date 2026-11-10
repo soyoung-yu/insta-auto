@@ -19,39 +19,36 @@
         "label": "요금 기준",
         "value": "토큰 수"
       }
-    ],
-    "summary": "글자 수≠토큰 수"
+    ]
   },
   "compare": {
     "a": {
-      "name": "A 세트",
-      "caption": "영어",
+      "name": "영어",
+      "caption": "hello world",
       "rows": [
         {
           "label": "단어1",
-          "value": "hello=1"
+          "value": "1토큰"
         },
         {
           "label": "단어2",
-          "value": "world=1"
+          "value": "1토큰"
         }
-      ],
-      "total": "2"
+      ]
     },
     "b": {
-      "name": "B 세트",
-      "caption": "한글",
+      "name": "한글",
+      "caption": "안녕 세상",
       "rows": [
         {
           "label": "단어1",
-          "value": "안녕=2"
+          "value": "2토큰"
         },
         {
           "label": "단어2",
-          "value": "세상=2"
+          "value": "2토큰"
         }
-      ],
-      "total": "4"
+      ]
     },
     "conclusion": "같은 뜻, 다른 토큰 수"
   },
@@ -69,8 +66,7 @@
         "label": "Llama",
         "value": "BPE 방식"
       }
-    ],
-    "summary": "모델마다 다르게 셈"
+    ]
   },
   "options": {
     "checks": [
@@ -90,8 +86,7 @@
         "text": "짧은 질문 하나",
         "checked": false
       }
-    ],
-    "summary": "길수록 비싸"
+    ]
   },
   "steps": {
     "steps": [
@@ -100,8 +95,7 @@
       "조각마다 번호",
       "번호로 계산",
       "다시 글로 조립"
-    ],
-    "summary": "쪼개고 다시 조립"
+    ]
   },
   "special": {
     "news": [
@@ -132,8 +126,7 @@
         "label": "모델 변경",
         "value": "계산법 달라짐"
       }
-    ],
-    "summary": "짧고 분명하게"
+    ]
   },
   "total": {
     "points": [

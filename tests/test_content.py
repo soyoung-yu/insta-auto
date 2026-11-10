@@ -82,3 +82,10 @@ def test_generate_post_retries_once_on_non_json_answer():
 
     assert generate_post(TOPIC, None, [], run=run).topic_id == "token"
     assert "JSON" in calls[1]
+
+
+def test_schema_has_no_summary_or_total_fields():
+    from hanip.content import Caution, Definition, Menu, Options, SetReceipt, Steps
+    for model in (Definition, Menu, Options, Steps, Caution):
+        assert "summary" not in model.model_fields, model.__name__
+    assert "total" not in SetReceipt.model_fields
