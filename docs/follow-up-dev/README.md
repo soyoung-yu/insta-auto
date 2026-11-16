@@ -23,3 +23,14 @@
 ### 확인할 것
 - 시스템 사용자 토큰에 게시물 삭제 권한을 줄 수 있는지 (Meta 앱 권한 설정)
 - 2026-11-17 No.06부터 완전 자동 게시라서, 게시 후 오류를 발견하면 이 기능으로 대응해야 한다.
+
+### 이번에 시도한 코드 (`attempts/`)
+2026-11-12~16 수동 처리에 쓴 일회용 스크립트. 그대로 실행하는 용도가 아니라 후속 개발 참고용이다. 저장소 루트에서 `uv run python <파일>`로 실행했다.
+
+| 파일 | 한 일 | 후속 기능 |
+|---|---|---|
+| [edit0004.py](attempts/edit0004.py), [edit0005.py](attempts/edit0005.py) | `post.json`의 특정 장 문구 교체 → 기존 jpg 삭제 → 다시 렌더링 → 미리보기 갱신 | `hanip edit N` |
+| [ig_check.py](attempts/ig_check.py) | media_id로 게시물 조회, DELETE 시도(권한 오류 #10로 실패) | `hanip delete N`, 삭제 확인 |
+| [repost0005.py](attempts/repost0005.py) | 이미지 다시 푸시(커밋 SHA 고정 URL) → 캐러셀 재게시 → state의 media_id 교체 | `hanip repost N` |
+
+주의: 수정 후 사실 확인을 다시 돌리지 않았다. 정식 기능에서는 수정한 장도 사실 확인을 거치게 할 것.
