@@ -147,6 +147,7 @@ def _record(state: State, settings: Settings, *, number: int, day: str, topic_id
 
 
 def _publish(settings: Settings, state: State, *, number: int, topic_id: str, theme: str, out_dir: Path, today: date, deps: Deps) -> Outcome:
+    client = None
     try:
         post = Post.model_validate_json((out_dir / "post.json").read_text())
         paths = sorted(out_dir.glob("slide-*.jpg"))
@@ -156,6 +157,8 @@ def _publish(settings: Settings, state: State, *, number: int, topic_id: str, th
         container = client.prepare_carousel(urls, caption)
     except Exception as e:  # noqa: BLE001 - nothing is public yet; keep state for a retry
         log.exception("publish preparation failed")
+        if client:
+            _log_usage(client)
         deps.notify(APP, f"No.{number:02d} 게시 실패: {e}")
         return Outcome.FAILED
     # Remember the container before publishing: if media_publish succeeds but the response is lost,
@@ -174,12 +177,20 @@ def _publish(settings: Settings, state: State, *, number: int, topic_id: str, th
             log.exception("could not check the account")
             media_id = None
         if not media_id:
+            _log_usage(client)
             deps.notify(APP, f"No.{number:02d} 게시 결과를 알 수 없어요. 다음 실행에서 확인합니다: {e}")
             return Outcome.FAILED
         log.info("publish returned an error but the post is live: %s", media_id)
+    _log_usage(client)
     _record(state, settings, number=number, day=today.isoformat(), topic_id=topic_id, theme=theme, media_id=media_id)
     deps.notify(APP, f"No.{number:02d} 게시 완료")
     return Outcome.PUBLISHED
+
+
+def _log_usage(client: Any) -> None:
+    summary = getattr(client, "usage_summary", None)
+    if summary:
+        log.info("instagram %s", summary())
 
 
 def _caption_head_from_disk(settings: Settings, number: int) -> str:

@@ -105,3 +105,25 @@ def test_find_by_caption_head_raises_on_api_error():
     responses.get(f"{BASE}/U1/media", status=403, json={"error": {"message": "Application request limit reached"}})
     with pytest.raises(InstagramError):
         client().find_by_caption_head("x")
+
+
+@responses.activate
+def test_usage_headers_are_tracked_as_peak_and_call_count():
+    responses.get(f"{BASE}/C1", json={"status_code": "IN_PROGRESS"}, headers={
+        "x-app-usage": '{"call_count":40,"total_cputime":5,"total_time":7}'})
+    responses.get(f"{BASE}/C1", json={"status_code": "FINISHED"}, headers={
+        "x-business-use-case-usage": '{"123":[{"type":"instagram","call_count":82,"total_cputime":3,"total_time":9,"estimated_time_to_regain_access":0}]}'})
+    c = client()
+    c.wait_until_ready("C1")
+    assert c.calls == 2
+    assert c.peak_usage == {"app.call_count": 40, "app.total_cputime": 5, "app.total_time": 7,
+                            "instagram.call_count": 82, "instagram.total_cputime": 3, "instagram.total_time": 9}
+    assert "API 호출 2회" in c.usage_summary() and "instagram.call_count 82%" in c.usage_summary()
+
+
+@responses.activate
+def test_bad_usage_header_is_ignored():
+    responses.get(f"{BASE}/C1", json={"status_code": "FINISHED"}, headers={"x-app-usage": "not json"})
+    c = client()
+    c.wait_until_ready("C1")
+    assert c.calls == 1 and c.peak_usage == {}

@@ -6,6 +6,8 @@ Each container is polled until status_code is FINISHED before it is used.
 
 from __future__ import annotations
 
+import json
+import logging
 import time
 
 import requests
@@ -14,6 +16,9 @@ GRAPH = "https://graph.instagram.com"  # Instagram-login tokens (refresh endpoin
 DEFAULT_HOST = "graph.facebook.com"  # unified-login system-user tokens
 POLL_SECONDS = 15  # every status check counts toward the app rate limit (403 "Application request limit reached")
 TIMEOUT = 30
+USAGE_WARN_PCT = 75
+
+log = logging.getLogger(__name__)
 
 
 class InstagramError(Exception):
@@ -43,9 +48,34 @@ class InstagramClient:
         self.base = f"https://{host}/{api_version}"
         self.http = session or requests.Session()
         self.sleep = sleep
+        self.calls = 0
+        self.peak_usage: dict[str, int] = {}  # highest % seen per metric, from Meta's rate-limit headers
+
+    def _track(self, r: requests.Response) -> requests.Response:
+        """Count the call and keep the peak of the usage headers, to see what fills the rate limit."""
+        self.calls += 1
+        usage: dict[str, int] = {}
+        try:
+            for k, v in json.loads(r.headers.get("x-app-usage") or "{}").items():
+                usage[f"app.{k}"] = int(v)
+            for entries in json.loads(r.headers.get("x-business-use-case-usage") or "{}").values():
+                for e in entries:
+                    for k in ("call_count", "total_cputime", "total_time"):
+                        usage[f"{e.get('type', 'buc')}.{k}"] = int(e.get(k, 0))
+        except (ValueError, TypeError, AttributeError):
+            usage = {}
+        for k, v in usage.items():
+            self.peak_usage[k] = max(v, self.peak_usage.get(k, 0))
+        if r.status_code >= 400 or any(v >= USAGE_WARN_PCT for v in usage.values()):
+            log.warning("instagram api call #%d status %s usage %s", self.calls, r.status_code, usage or "(no header)")
+        return r
+
+    def usage_summary(self) -> str:
+        peak = ", ".join(f"{k} {v}%" for k, v in sorted(self.peak_usage.items())) or "사용량 헤더 없음"
+        return f"API 호출 {self.calls}회 · 최고 사용량: {peak}"
 
     def _post(self, path: str, data: dict) -> dict:
-        return _check(self.http.post(f"{self.base}/{path}", data={**data, "access_token": self.token}, timeout=TIMEOUT))
+        return _check(self._track(self.http.post(f"{self.base}/{path}", data={**data, "access_token": self.token}, timeout=TIMEOUT)))
 
     def create_image_item(self, image_url: str) -> str:
         return self._post(f"{self.user_id}/media", {"image_url": image_url, "is_carousel_item": "true"})["id"]
@@ -60,7 +90,7 @@ class InstagramClient:
             params={"fields": "status_code", "access_token": self.token},
             timeout=TIMEOUT,
         )
-        return _check(r).get("status_code", "")
+        return _check(self._track(r)).get("status_code", "")
 
     def wait_until_ready(self, container_id: str, timeout: int = 300) -> None:
         waited = 0
@@ -82,7 +112,7 @@ class InstagramClient:
             params={"fields": "id,caption", "limit": limit, "access_token": self.token},
             timeout=TIMEOUT,
         )
-        for m in _check(r).get("data", []):
+        for m in _check(self._track(r)).get("data", []):
             if caption_head(m.get("caption") or "") == caption_head(head):
                 return m["id"]
         return None
