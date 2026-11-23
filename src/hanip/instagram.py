@@ -12,12 +12,17 @@ import requests
 
 GRAPH = "https://graph.instagram.com"  # Instagram-login tokens (refresh endpoint)
 DEFAULT_HOST = "graph.facebook.com"  # unified-login system-user tokens
-POLL_SECONDS = 5
+POLL_SECONDS = 15  # every status check counts toward the app rate limit (403 "Application request limit reached")
 TIMEOUT = 30
 
 
 class InstagramError(Exception):
     pass
+
+
+def caption_head(caption: str) -> str:
+    """First non-empty line of a caption; each episode's hook line is unique."""
+    return next((line.strip() for line in caption.splitlines() if line.strip()), "")
 
 
 def _check(r: requests.Response) -> dict:
@@ -69,6 +74,18 @@ class InstagramClient:
                 raise InstagramError(f"컨테이너 {container_id} 준비 시간 초과 (상태 {status})")
             self.sleep(POLL_SECONDS)
             waited += POLL_SECONDS
+
+    def find_by_caption_head(self, head: str, limit: int = 10) -> str | None:
+        """Media id of a recent post whose caption starts with this line: the ground truth for "did it go live"."""
+        r = self.http.get(
+            f"{self.base}/{self.user_id}/media",
+            params={"fields": "id,caption", "limit": limit, "access_token": self.token},
+            timeout=TIMEOUT,
+        )
+        for m in _check(r).get("data", []):
+            if caption_head(m.get("caption") or "") == caption_head(head):
+                return m["id"]
+        return None
 
     def publish(self, container_id: str) -> str:
         return self._post(f"{self.user_id}/media_publish", {"creation_id": container_id})["id"]

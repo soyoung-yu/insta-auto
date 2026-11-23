@@ -24,11 +24,13 @@ class Fake:
     """Records calls; each attribute is a Deps-compatible callable."""
 
     def __init__(self, overflow_times=0, ig_error=None, gen_error=None, publish_error=None, status="PUBLISHED",
-                 fact_fail_times=0, fact_error=None):
+                 fact_fail_times=0, fact_error=None, went_live=None, find_error=None):
         self.calls = {}
         self.fact_fail_times = fact_fail_times
         self.fact_error = fact_error
-        self.publish_error = publish_error  # raised by publish() but the post still went live
+        self.publish_error = publish_error  # raised by publish(); the post may still have gone live
+        self.went_live = (status == "PUBLISHED") if went_live is None else went_live
+        self.find_error = find_error
         self.status = status
         self.overflow_times = overflow_times
         self.ig_error = ig_error
@@ -102,11 +104,20 @@ class Fake:
                 fake._rec("publish", container_id)
                 if fake.publish_error:
                     err, fake.publish_error = fake.publish_error, None
-                    if fake.status == "PUBLISHED":
+                    if fake.went_live:
                         fake.published.append(fake.last_caption)
                     raise err
                 fake.published.append(fake.last_caption)
                 return f"M{len(fake.published)}"
+
+            def find_by_caption_head(self, head):
+                fake._rec("find_by_caption_head", head)
+                if fake.find_error:
+                    raise fake.find_error
+                for i, c in enumerate(fake.published, start=1):
+                    if c.strip().splitlines()[0].strip() == head.strip():
+                        return f"M{i}"
+                return None
 
             def container_status(self, container_id):
                 fake._rec("container_status", container_id)
@@ -128,6 +139,7 @@ class Fake:
             refresh_token=refresh_token,
             notify=lambda t, m: self.notes.append((t, m)),
             open_file=lambda p: self._rec("open_file", p),
+            sleep=lambda s: self._rec("sleep", s),
         )
 
 
@@ -294,18 +306,44 @@ def test_next_topic_passed_for_preview_of_next_episode(settings):
     assert f.calls["generate_post"][0][0][0].id == "t0"
 
 
-def test_publish_that_went_live_despite_error_is_not_reposted(settings):
+def test_publish_that_went_live_despite_error_is_recorded_in_the_same_run(settings):
     put_state(settings, published_count=5, curriculum_index=5)
-    f = Fake(publish_error=InstagramError("timeout"), status="PUBLISHED")
-    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.FAILED
-    assert state(settings).inflight.number == 6
+    f = Fake(publish_error=InstagramError("(403): Application request limit reached"), went_live=True)
+    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.PUBLISHED
+    s = state(settings)
+    assert [(h.number, h.media_id) for h in s.history] == [(6, "M1")]
+    assert (s.published_count, s.curriculum_index, s.inflight) == (6, 6, None)
+    tue = MON + timedelta(days=1)
+    assert run_daily(settings, today=tue, deps=f.deps()) == Outcome.PUBLISHED
+    assert [h.number for h in state(settings).history] == [6, 7]
+    assert len(f.published) == 2  # No.6 once, No.7 once
+
+
+def test_live_post_with_error_container_is_not_reposted_next_run(settings):
+    """2026-11-20/23: publish said 403 but went live; the next run saw container ERROR and posted the topic again."""
+    put_state(settings, published_count=5, curriculum_index=5)
+    f = Fake(publish_error=InstagramError("403"), went_live=True, status="ERROR", find_error=InstagramError("403"))
+    assert run_daily(settings, today=MON, deps=f.deps()) == Outcome.FAILED  # could not verify on the day
+    assert state(settings).inflight.caption_head
+    f.find_error = None
+    gens = len(f.calls["generate_post"])
     tue = MON + timedelta(days=1)
     assert run_daily(settings, today=tue, deps=f.deps()) == Outcome.PUBLISHED
     s = state(settings)
-    assert [h.number for h in s.history] == [6, 7]
-    assert s.history[0].date == MON.isoformat()
-    assert (s.published_count, s.curriculum_index, s.inflight) == (7, 7, None)
-    assert len(f.published) == 2  # No.6 once, No.7 once
+    assert [(h.number, h.topic_id, h.date) for h in s.history] == [(6, "t5", MON.isoformat()), (7, "t6", tue.isoformat())]
+    assert len(f.calls["generate_post"]) == gens + 1  # only No.7 was generated
+    assert len(f.published) == 2
+
+
+def test_inflight_is_kept_when_account_cannot_be_checked(settings):
+    put_state(settings, published_count=5, curriculum_index=5)
+    f = Fake(publish_error=InstagramError("403"), went_live=False, status="ERROR", find_error=InstagramError("403"))
+    run_daily(settings, today=MON, deps=f.deps())
+    gens = len(f.calls["generate_post"])
+    tue = MON + timedelta(days=1)
+    assert run_daily(settings, today=tue, deps=f.deps()) == Outcome.FAILED
+    assert len(f.calls["generate_post"]) == gens and state(settings).inflight is not None
+    assert f.published == []
 
 
 def test_inflight_published_today_stops_same_day_rerun(settings):

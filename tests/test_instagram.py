@@ -87,3 +87,21 @@ def test_refresh_token():
 def test_container_status():
     add_status("CAR", "PUBLISHED")
     assert client().container_status("CAR") == "PUBLISHED"
+
+
+@responses.activate
+def test_find_by_caption_head_matches_first_line():
+    responses.get(f"{BASE}/U1/media", json={"data": [
+        {"id": "M2", "caption": "다른 글\n\n본문"},
+        {"id": "M1", "caption": "로그인은 한 번 했는데?\n\n1. 쿠키는"},
+        {"id": "M0"},  # caption-less media must not break matching
+    ]})
+    assert client().find_by_caption_head("로그인은 한 번 했는데?") == "M1"
+    assert client().find_by_caption_head("없는 글") is None
+
+
+@responses.activate
+def test_find_by_caption_head_raises_on_api_error():
+    responses.get(f"{BASE}/U1/media", status=403, json={"error": {"message": "Application request limit reached"}})
+    with pytest.raises(InstagramError):
+        client().find_by_caption_head("x")

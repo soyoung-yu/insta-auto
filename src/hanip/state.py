@@ -38,6 +38,7 @@ class Inflight:
     theme: str
     date: str
     container_id: str
+    caption_head: str = ""  # used to find the post on the account when the API response was an error
 
 
 @dataclass

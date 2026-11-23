@@ -8,6 +8,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import logging
+import time
 from dataclasses import dataclass
 from datetime import date
 from enum import StrEnum
@@ -41,6 +42,7 @@ TOKEN_REFRESH_DAYS = 50
 NEWS_CANDIDATES = 6
 MAX_GENERATIONS = 3  # first try + 2 retries on overflow
 APP = "오늘의 한입"
+VERIFY_WAIT_SECONDS = 60  # after a publish error, wait before checking whether the post went live anyway
 
 
 class Outcome(StrEnum):
@@ -72,6 +74,7 @@ class Deps:
     refresh_token: Callable[..., Any] = ig.refresh_token
     notify: Callable[[str, str], None] = notify_mod.notify
     open_file: Callable[[Path], None] = notify_mod.open_file
+    sleep: Callable[[float], None] = time.sleep
 
 
 DISCUSSION_INVITE = "다르게 알고 있거나 더 쉬운 설명이 있다면 댓글로 나눠 줘 💬 같이 이야기하면서 한입씩 더 배워 가자!"
@@ -149,24 +152,41 @@ def _publish(settings: Settings, state: State, *, number: int, topic_id: str, th
         paths = sorted(out_dir.glob("slide-*.jpg"))
         urls = deps.publish_images(paths, number=number, repo_dir=settings.repo_dir, base_url=settings.image_base_url)
         client = deps.make_instagram(settings)
-        container = client.prepare_carousel(urls, full_caption(post))
+        caption = full_caption(post)
+        container = client.prepare_carousel(urls, caption)
     except Exception as e:  # noqa: BLE001 - nothing is public yet; keep state for a retry
         log.exception("publish preparation failed")
         deps.notify(APP, f"No.{number:02d} 게시 실패: {e}")
         return Outcome.FAILED
     # Remember the container before publishing: if media_publish succeeds but the response is lost,
     # the next run checks this container instead of posting the same episode again.
-    state.inflight = Inflight(number, topic_id, theme, today.isoformat(), container)
+    state.inflight = Inflight(number, topic_id, theme, today.isoformat(), container, ig.caption_head(caption))
     save_state(state, settings.state_path)
     try:
         media_id = client.publish(container)
     except Exception as e:  # noqa: BLE001
-        log.exception("media_publish failed")
-        deps.notify(APP, f"No.{number:02d} 게시 결과를 알 수 없어요. 다음 실행에서 확인합니다: {e}")
-        return Outcome.FAILED
+        # An error response does not mean it failed: a 403 rate-limit reply has come back for posts that went live.
+        log.exception("media_publish failed; checking the account")
+        deps.sleep(VERIFY_WAIT_SECONDS)
+        try:
+            media_id = client.find_by_caption_head(state.inflight.caption_head)
+        except Exception:  # noqa: BLE001
+            log.exception("could not check the account")
+            media_id = None
+        if not media_id:
+            deps.notify(APP, f"No.{number:02d} 게시 결과를 알 수 없어요. 다음 실행에서 확인합니다: {e}")
+            return Outcome.FAILED
+        log.info("publish returned an error but the post is live: %s", media_id)
     _record(state, settings, number=number, day=today.isoformat(), topic_id=topic_id, theme=theme, media_id=media_id)
     deps.notify(APP, f"No.{number:02d} 게시 완료")
     return Outcome.PUBLISHED
+
+
+def _caption_head_from_disk(settings: Settings, number: int) -> str:
+    path = settings.out_dir / f"{number:04d}" / "post.json"
+    if not path.exists():
+        return ""
+    return ig.caption_head(full_caption(Post.model_validate_json(path.read_text())))
 
 
 def _resolve_inflight(settings: Settings, state: State, today: date, deps: Deps) -> Outcome | None:
@@ -174,8 +194,15 @@ def _resolve_inflight(settings: Settings, state: State, today: date, deps: Deps)
     inf = state.inflight
     if not inf:
         return None
+    head = inf.caption_head or _caption_head_from_disk(settings, inf.number)
     try:
         client = deps.make_instagram(settings)
+        # The account itself is the ground truth; container status has read ERROR for a post that was live.
+        media_id = client.find_by_caption_head(head) if head else None
+        if media_id:
+            _record(state, settings, number=inf.number, day=inf.date, topic_id=inf.topic_id, theme=inf.theme, media_id=media_id)
+            deps.notify(APP, f"No.{inf.number:02d}은 이미 게시돼 있었어요. 기록만 정리했어요.")
+            return None
         status = client.container_status(inf.container_id)
         if status == "PUBLISHED":
             _record(state, settings, number=inf.number, day=inf.date, topic_id=inf.topic_id, theme=inf.theme,
